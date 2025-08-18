@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import type { Application } from "pixi.js";
 import { ref } from "vue";
+import type { Engine } from "../game/engine/Engine";
 
-export const useAppStore = defineStore('appStore', () => {
-      const app = ref<Application | null>(null);
-    
-      return {app};
+export const useAppStore = defineStore("appStore", () => {
+  const engine = ref<Engine | null>(null);
+
+  return { engine };
 });
