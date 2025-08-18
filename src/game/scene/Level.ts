@@ -6,14 +6,13 @@ import { Tile } from "./Tile";
 
 export class Level {
   tiles: Tile[] = [];
-  player: Player;
   camera: Camera;
   input: InputManager;
 
-  constructor(public scene: Container) {
-    this.player = new Player();
-    this.player.x = 100;
-    this.player.y = 300;
+  constructor(
+    readonly scene: Container,
+    readonly player: Player
+  ) {
     this.player.addTo(scene);
 
     for (let i = 0; i < 10; i++) {
@@ -31,7 +30,7 @@ export class Level {
       {
         left: this.input.isDown("ArrowLeft") || this.input.isDown("KeyA"),
         right: this.input.isDown("ArrowRight") || this.input.isDown("KeyD"),
-        jump: this.input.isDown("ArrowUp") || this.input.isDown("KeyW"),
+        jump: this.input.isDown("Space"),
       },
       this.tiles
     );
