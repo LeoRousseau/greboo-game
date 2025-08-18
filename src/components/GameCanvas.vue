@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import { Application, Assets, Container, Sprite } from "pixi.js";
+import { useAppStore } from "../store/appStore";
 
 const container = ref<HTMLDivElement | null>(null);
-let app: Application | null = null;
+const appStore = useAppStore();
 
 onMounted(async () => {
-  app = new Application();
+  const app = new Application();
+  appStore.app = app;
 
   // ⚡ Initialisation avec resize automatique
-  await app.init({ background: '#1099bb', resizeTo: window });
+  await app.init({ background: "#1099bb", resizeTo: window });
 
   // ⚡ Append dans le container Vue, pas dans #app
   if (container.value) {
@@ -20,7 +22,7 @@ onMounted(async () => {
   const pixiContainer = new Container();
   app.stage.addChild(pixiContainer);
 
-  const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+  const texture = await Assets.load("https://pixijs.com/assets/bunny.png");
 
   for (let i = 0; i < 25; i++) {
     const bunny = new Sprite(texture);
@@ -42,9 +44,10 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+  const app = appStore.app;
   if (app) {
     app.destroy(true);
-    app = null;
+    appStore.app = null;
   }
 });
 </script>
@@ -54,7 +57,8 @@ onUnmounted(() => {
 </template>
 
 <style>
-.pixi-container, canvas {
+.pixi-container,
+canvas {
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -63,7 +67,9 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-html, body, #app {
+html,
+body,
+#app {
   margin: 0;
   padding: 0;
   overflow: hidden;
