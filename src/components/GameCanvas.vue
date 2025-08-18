@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { useAppStore } from "../store/appStore";
 import { Engine } from "../game/engine/Engine";
+import { Level } from "../game/scene/Level";
 
 const container = ref<HTMLDivElement | null>(null);
 const appStore = useAppStore();
@@ -9,7 +10,15 @@ const appStore = useAppStore();
 onMounted(async () => {
   if (container.value) {
     appStore.engine = new Engine(container.value);
-    appStore.engine.init();
+    await appStore.engine.init();
+
+    const level = new Level(appStore.engine.scene);
+
+    appStore.engine.application.ticker.add(() => {
+      level.update();
+    });
+
+    appStore.engine.start();
   }
 });
 
