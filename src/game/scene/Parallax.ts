@@ -1,28 +1,47 @@
-import { Assets, Container, Sprite, TilingSprite } from "pixi.js";
+import { Application, Container, TilingSprite, Assets } from "pixi.js";
+
+type LayerCfg = { src: string; factor: number };
 
 export class Parallax {
-  sprites: TilingSprite[] = [];
+  private container = new Container();
+  private layers: { sprite: TilingSprite; factor: number }[] = [];
 
-  constructor(readonly parent: Container) {}
+  constructor(
+    private app: Application,
+    private world: Container
+  ) {
+    this.container.zIndex = 0;
+    this.app.stage.sortableChildren = true;
 
-  async init() {
-    const textures = [
-      "https://pxpx.imgix.net/2021/10/parallax-1.jpg", // arrière-plan lointain
-    ];
+    this.app.stage.addChildAt(this.container, 0);
+    window.addEventListener("resize", this.handleResize);
+  }
 
-    for (let i = 0; i < textures.length; i++) {
-      const texture = await Assets.load(textures[i]);
-      const sprite = new TilingSprite(texture, parent.innerWidth, texture.height);
-      this.sprites.push(sprite);
-      this.parent.addChildAt(sprite, 0);
+  async init(config: LayerCfg[]) {
+    for (const { src, factor } of config) {
+      const tex = await Assets.load(src);
+      const spr = new TilingSprite({ texture: tex, width: this.app.screen.width, height: tex.height });
+      spr.position.set(0, 0);
+      this.container.addChild(spr);
+      this.layers.push({ sprite: spr, factor });
     }
   }
 
-  update(playerX: number) {
-    console.log(playerX);
-    const factors = [0.3, 0.6, 1]; // vitesse relative pour le parallax
-    this.sprites.forEach((s, i) => {
-      s.tilePosition.x = playerX * factors[i];
-    });
+  update() {
+    for (const { sprite, factor } of this.layers) {
+      sprite.tilePosition.x = this.world.x * factor;
+    }
+  }
+
+  private handleResize = () => {
+    for (const { sprite } of this.layers) {
+      sprite.width = this.app.screen.width;
+      sprite.height = this.app.screen.height;
+    }
+  };
+
+  destroy() {
+    window.removeEventListener("resize", this.handleResize);
+    this.container.destroy({ children: true });
   }
 }

@@ -14,7 +14,7 @@ onMounted(async () => {
     await appStore.engine.init();
 
     const player = new Player();
-    const level = new Level(appStore.engine.scene, player);
+    const level = new Level(appStore.engine.application, appStore.engine.world, player);
 
     appStore.engine.application.ticker.add(() => {
       level.update();
