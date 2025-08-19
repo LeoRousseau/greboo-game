@@ -20,7 +20,7 @@ export class Parallax {
   async init(config: LayerCfg[]) {
     for (const { src, factor } of config) {
       const tex = await Assets.load(src);
-      const spr = new TilingSprite({ texture: tex, width: this.app.screen.width, height: tex.height });
+      const spr = new TilingSprite({ texture: tex, width: this.app.screen.width, height: this.app.screen.height });
       spr.position.set(0, 0);
       this.container.addChild(spr);
       this.layers.push({ sprite: spr, factor });
@@ -30,6 +30,7 @@ export class Parallax {
   update() {
     for (const { sprite, factor } of this.layers) {
       sprite.tilePosition.x = this.world.x * factor;
+      sprite.tilePosition.y = this.world.y * factor * 0.2;
     }
   }
 

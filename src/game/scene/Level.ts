@@ -34,7 +34,7 @@ export class Level {
   }
 
   async init() {
-    await this.background.init([{ src: "https://pxpx.imgix.net/2021/10/parallax-1.jpg", factor: 0.2 }]);
+    await this.background.init([{ src: "./sky.jpg", factor: 0.1 }]);
 
     const texture = await Assets.load(
       "https://mir-s3-cdn-cf.behance.net/project_modules/max_632_webp/2be35548008379.56081eba26285.png"
