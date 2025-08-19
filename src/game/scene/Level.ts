@@ -3,6 +3,7 @@ import { Camera } from "../player/camera";
 import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
 import { Parallax } from "./Parallax";
+import { TiledLoader } from "./TiledLoader";
 
 export class Level {
   tiles: Sprite[] = [];
@@ -35,28 +36,8 @@ export class Level {
 
   async init() {
     await this.background.init([{ src: "./sky.jpg", factor: 0.1 }]);
-
-    const texture = await Assets.load(
-      "https://mir-s3-cdn-cf.behance.net/project_modules/max_632_webp/2be35548008379.56081eba26285.png"
-    );
-
-    for (let i = 0; i < 20; i++) {
-      const tile = new Sprite(texture);
-      tile.x = i * 100;
-      tile.y = 400;
-      tile.width = 100;
-      tile.height = 100;
-      this.content.addChild(tile);
-      this.tiles.push(tile);
-    }
-
-    const tile = new Sprite(texture);
-    tile.x = 600;
-    tile.y = 300;
-    tile.width = 100;
-    tile.height = 100;
-    this.content.addChild(tile);
-    this.tiles.push(tile);
+    const loader = new TiledLoader(this.content);
+    await loader.loadMap("./level1.json", "./tiles.jpg");
   }
 
   update() {
