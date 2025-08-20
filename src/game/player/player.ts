@@ -7,7 +7,7 @@ export class Player {
   public vx = 0;
   public vy = 0;
 
-  private gravity = 0;
+  private gravity = 1;
   private speed = 5;
   private jumpStrength = -12;
   private onGround = false;

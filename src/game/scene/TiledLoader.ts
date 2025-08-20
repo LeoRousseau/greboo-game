@@ -3,30 +3,37 @@ import { Assets, Container, Rectangle, Sprite, Texture } from "pixi.js";
 export class TiledLoader {
   constructor(private parent: Container) {}
 
-  async loadMap(mapUrl: string, tilesetImageUrl: string) {
+  async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<Sprite[]> {
     const map = await (await fetch(mapUrl)).json();
-    const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);
     const tileset = await (await fetch(map.tilesets[0].source)).json();
+    const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);
 
-    const { tilewidth, tileheight, layers } = map;
-    const tilesPerLine = Math.round(tilewidth / tileset.imagewidth);
+    const { tilewidth, tileheight, layers, width, height } = map;
+    const tilesPerLine = tileset.imagewidth / tileset.tilewidth;
+
     const textures = Array.from({ length: tileset.tilecount }, (_, i) => {
+      const x = (i % tilesPerLine) * tileset.tilewidth;
+      const y = Math.floor(i / tilesPerLine) * tileset.tileheight;
       return new Texture({
         source: tilesetTexture.source,
-        frame: new Rectangle(i * tilewidth, Math.floor(i / tilesPerLine), tilewidth, tileheight),
+        frame: new Rectangle(x, y, tileset.tilewidth, tileset.tileheight),
       });
     });
 
-    console.log(textures);
-
+    const tiles: Sprite[] = [];
     for (const layer of layers) {
       if (layer.type === "tilelayer") {
         const { data } = layer;
-        for (let row = 0; row < map.height; row++) {
-          for (let col = 0; col < map.width; col++) {
-            const tileId = data[row * map.width + col];
-            if (tileId !== 0) {
-              const tile = new Sprite(textures[tileId - 1]);
+        for (let row = 0; row < height; row++) {
+          for (let col = 0; col < width; col++) {
+            const gid = data[row * width + col];
+            if (gid !== 0) {
+              const tileIndex = gid - map.tilesets[0].firstgid;
+              const texture = textures[tileIndex];
+              if (!texture) continue;
+
+              const tile = new Sprite(texture);
+              tiles.push(tile);
               tile.width = tilewidth;
               tile.height = tileheight;
               tile.x = col * tilewidth;
@@ -41,10 +48,12 @@ export class TiledLoader {
         for (const obj of layer.objects) {
           if (obj.name === "PlayerSpawn") {
             console.log("Player spawn at:", obj.x, obj.y);
-            // 👉 ici tu peux déplacer ton Player
+            // 👉 ici tu pourras positionner ton player
           }
         }
       }
     }
+
+    return tiles;
   }
 }

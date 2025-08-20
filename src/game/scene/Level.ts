@@ -36,8 +36,7 @@ export class Level {
 
   async init() {
     await this.background.init([{ src: "./sky.jpg", factor: 0.1 }]);
-    const loader = new TiledLoader(this.content);
-    await loader.loadMap("./level1.json", "./tiles.jpg");
+    this.tiles = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.jpg");
   }
 
   update() {
