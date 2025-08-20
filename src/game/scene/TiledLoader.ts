@@ -33,7 +33,9 @@ export class TiledLoader {
               if (!texture) continue;
 
               const tile = new Sprite(texture);
+
               tiles.push(tile);
+              tile.roundPixels = true;
               tile.width = tilewidth;
               tile.height = tileheight;
               tile.x = col * tilewidth;

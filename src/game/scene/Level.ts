@@ -1,4 +1,4 @@
-import { Application, Assets, Container, Sprite } from "pixi.js";
+import { Application, Container, Sprite } from "pixi.js";
 import { Camera } from "../player/camera";
 import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";

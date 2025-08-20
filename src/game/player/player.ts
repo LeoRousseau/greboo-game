@@ -1,21 +1,40 @@
 import { Graphics, Container } from "pixi.js";
 
+type Rect = { x: number; y: number; width: number; height: number };
+
 export class Player {
   public sprite: Graphics;
-  public x = 0;
+  public x = 100;
   public y = 0;
   public vx = 0;
   public vy = 0;
 
-  private gravity = 1;
-  private speed = 5;
-  private jumpStrength = -12;
+  // Dimensions de l'ellipse (centrée en 0,0) → AABB utilisé pour les collisions
+  private halfW = 15; // ellipse rx
+  private halfH = 30; // ellipse ry
+
+  // Physique (valeurs par frame si tu n'utilises pas dt)
+  private gravity = 0.5;
+  private maxFall = 10;
+  private speed = 5; // vitesse max horizontale
+  private accel = 1.2; // accélération au sol
+  private airAccel = 0.6; // accélération en l’air
+  private friction = 0.85; // friction au sol
+  private jumpStrength = -13; // impulsion de saut
+
+  // États
   private onGround = false;
+
+  // Quality of life platformer
+  private jumpBufferFrames = 6; // sauter juste après avoir pressé jump
+  private coyoteFrames = 6; // sauter juste après avoir quitté le sol
+  private jumpBuffer = 0;
+  private coyote = 0;
 
   constructor() {
     this.sprite = new Graphics();
     this.sprite.beginFill(0xff0000);
-    this.sprite.drawEllipse(0, 0, 15, 30);
+    this.sprite.drawEllipse(0, 0, this.halfW, this.halfH);
     this.sprite.endFill();
   }
 
@@ -24,52 +43,101 @@ export class Player {
     this.updateSprite();
   }
 
-  updateSprite() {
+  setAt(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+    this.updateSprite();
+  }
+
+  private updateSprite() {
     this.sprite.x = this.x;
     this.sprite.y = this.y;
   }
 
-  update(
-    input: { left: boolean; right: boolean; jump: boolean },
-    tiles: { x: number; y: number; width: number; height: number }[]
-  ) {
-    // horizontal
-    if (input.left) this.vx = -this.speed;
-    else if (input.right) this.vx = this.speed;
-    else this.vx = 0;
+  private getAABB() {
+    return {
+      left: this.x - this.halfW,
+      right: this.x + this.halfW,
+      top: this.y - this.halfH,
+      bottom: this.y + this.halfH,
+    };
+  }
 
-    // vertical
-    if (input.jump && this.onGround) {
-      this.vy = this.jumpStrength;
-      this.onGround = false;
+  private intersects(tile: Rect) {
+    const a = this.getAABB();
+    const b = { left: tile.x, right: tile.x + tile.width, top: tile.y, bottom: tile.y + tile.height };
+    return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+  }
+
+  update(input: { left: boolean; right: boolean; jump: boolean }, tiles: Rect[]) {
+    // -- Jump buffer & coyote time (en frames)
+    if (input.jump) this.jumpBuffer = this.jumpBufferFrames;
+    else if (this.jumpBuffer > 0) this.jumpBuffer--;
+
+    if (this.onGround) this.coyote = this.coyoteFrames;
+    else if (this.coyote > 0) this.coyote--;
+
+    // -- Contrôle horizontal : accélération/friction
+    const want = (input.left ? -1 : 0) + (input.right ? 1 : 0);
+    const targetVx = want * this.speed;
+    const a = this.onGround ? this.accel : this.airAccel;
+
+    if (want !== 0) {
+      // accélère vers target
+      if (this.vx < targetVx) this.vx = Math.min(targetVx, this.vx + a);
+      if (this.vx > targetVx) this.vx = Math.max(targetVx, this.vx - a);
+    } else if (this.onGround) {
+      // friction au sol
+      this.vx *= this.friction;
+      if (Math.abs(this.vx) < 0.05) this.vx = 0;
     }
 
-    this.vy += this.gravity;
+    // -- Variable jump : si on relâche jump pendant la montée, alourdit un peu
+    const extraGravity = this.vy < 0 && !input.jump ? 0.6 : 0;
 
+    // -- Gravité
+    this.vy += this.gravity + extraGravity;
+    if (this.vy > this.maxFall) this.vy = this.maxFall;
+
+    // === Déplacement HORIZONTAL + résolution de collision ===
     this.x += this.vx;
-    this.y += this.vy;
-
-    // collision simple avec le sol (tiles)
-    this.onGround = false;
-    for (const tile of tiles) {
-      const playerBottom = this.y + 30;
-      const playerTop = this.y - 30;
-      const playerLeft = this.x - 20;
-      const playerRight = this.x + 20;
-
-      const tileTop = tile.y;
-      const tileBottom = tile.y + tile.height;
-      const tileLeft = tile.x;
-      const tileRight = tile.x + tile.width;
-
-      if (playerBottom > tileTop && playerTop < tileBottom && playerRight > tileLeft && playerLeft < tileRight) {
-        // collision par le bas
-        if (this.vy > 0 && playerBottom - this.vy <= tileTop) {
-          this.y = tileTop - 30;
-          this.vy = 0;
-          this.onGround = true;
-        }
+    for (const t of tiles) {
+      if (!this.intersects(t)) continue;
+      // on poussse hors du tile selon la direction
+      if (this.vx > 0) {
+        // venant de la gauche
+        this.x = t.x - this.halfW;
+      } else if (this.vx < 0) {
+        // venant de la droite
+        this.x = t.x + t.width + this.halfW;
       }
+      this.vx = 0;
+    }
+
+    // === Déplacement VERTICAL + résolution de collision ===
+    this.onGround = false;
+    this.y += this.vy;
+    for (const t of tiles) {
+      if (!this.intersects(t)) continue;
+
+      if (this.vy > 0) {
+        // chute → poser sur le sol
+        this.y = t.y - this.halfH;
+        this.vy = 0;
+        this.onGround = true;
+      } else if (this.vy < 0) {
+        // tête heurte le plafond
+        this.y = t.y + t.height + this.halfH;
+        this.vy = 0;
+      }
+    }
+
+    // === Saut avec buffer & coyote ===
+    if (this.jumpBuffer > 0 && (this.onGround || this.coyote > 0)) {
+      this.vy = this.jumpStrength;
+      this.onGround = false;
+      this.coyote = 0;
+      this.jumpBuffer = 0;
     }
 
     this.updateSprite();
