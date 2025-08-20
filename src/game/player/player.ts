@@ -15,7 +15,7 @@ export class Player {
   constructor() {
     this.sprite = new Graphics();
     this.sprite.beginFill(0xff0000);
-    this.sprite.drawCircle(0, 0, 20);
+    this.sprite.drawEllipse(0, 0, 15, 30);
     this.sprite.endFill();
   }
 
@@ -52,8 +52,8 @@ export class Player {
     // collision simple avec le sol (tiles)
     this.onGround = false;
     for (const tile of tiles) {
-      const playerBottom = this.y + 20;
-      const playerTop = this.y - 20;
+      const playerBottom = this.y + 30;
+      const playerTop = this.y - 30;
       const playerLeft = this.x - 20;
       const playerRight = this.x + 20;
 
@@ -65,7 +65,7 @@ export class Player {
       if (playerBottom > tileTop && playerTop < tileBottom && playerRight > tileLeft && playerLeft < tileRight) {
         // collision par le bas
         if (this.vy > 0 && playerBottom - this.vy <= tileTop) {
-          this.y = tileTop - 20;
+          this.y = tileTop - 30;
           this.vy = 0;
           this.onGround = true;
         }
