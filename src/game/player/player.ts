@@ -14,7 +14,7 @@ export class Player {
   private halfH = 30; // ellipse ry
 
   // Physique (valeurs par frame si tu n'utilises pas dt)
-  private gravity = 0.5;
+  private gravity = 0.2;
   private maxFall = 10;
   private speed = 5; // vitesse max horizontale
   private accel = 1.2; // accélération au sol

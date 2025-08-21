@@ -5,7 +5,7 @@ export class Camera {
   constructor(
     public player: Player,
     public container: Container,
-    public minY: number = -200,
+    public minY: number = -1000,
     public maxY: number = 1000
   ) {}
 
