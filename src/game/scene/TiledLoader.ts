@@ -1,4 +1,5 @@
 import { Assets, Container, Rectangle, Sprite, Texture } from "pixi.js";
+import type { TiledLayer, TiledMap } from "./Tiled";
 
 const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
 const FLIPPED_VERTICALLY_FLAG = 0x40000000;
@@ -7,8 +8,8 @@ const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 export class TiledLoader {
   constructor(private parent: Container) {}
 
-  async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<Sprite[]> {
-    const map = await (await fetch(mapUrl)).json();
+  async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<{ container: Container; collide: boolean }[]> {
+    const map: TiledMap = await (await fetch(mapUrl)).json();
     const tileset = await (await fetch(map.tilesets[0].source)).json();
     const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);
 
@@ -24,62 +25,106 @@ export class TiledLoader {
       });
     });
 
-    const tiles: Sprite[] = [];
+    const layerContainers: { container: Container; collide: boolean }[] = [];
 
     for (const layer of layers) {
-      if (layer.type === "tilelayer") {
-        const { data } = layer;
+      if (layer.type !== "tilelayer") continue;
 
-        for (let row = 0; row < height; row++) {
-          for (let col = 0; col < width; col++) {
-            const rawGid = data[row * width + col];
-            if (rawGid === 0) continue;
+      const layerContainer = new Container();
+      layerContainer.label = layer.name;
+      this.parent.addChild(layerContainer);
 
-            const flippedH = (rawGid & FLIPPED_HORIZONTALLY_FLAG) !== 0;
-            const flippedV = (rawGid & FLIPPED_VERTICALLY_FLAG) !== 0;
-            const flippedD = (rawGid & FLIPPED_DIAGONALLY_FLAG) !== 0;
+      const { data } = layer;
 
-            const gid = rawGid & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
-            const tileIndex = gid - map.tilesets[0].firstgid;
-            const texture = textures[tileIndex];
-            if (!texture) continue;
+      for (let row = 0; row < height; row++) {
+        for (let col = 0; col < width; col++) {
+          const rawGid = data[row * width + col];
+          if (rawGid === 0) continue;
 
-            const tile = new Sprite(texture);
-            tile.roundPixels = true;
-            tile.width = tilewidth;
-            tile.height = tileheight;
-            tile.x = col * tilewidth;
-            tile.y = row * tileheight;
+          const flippedH = (rawGid & FLIPPED_HORIZONTALLY_FLAG) !== 0;
+          const flippedV = (rawGid & FLIPPED_VERTICALLY_FLAG) !== 0;
+          const flippedD = (rawGid & FLIPPED_DIAGONALLY_FLAG) !== 0;
 
-            if (flippedH) {
-              tile.scale.x *= -1;
-              tile.x += tilewidth; // TODO this break collisions
-            }
-            if (flippedV) {
-              tile.scale.y *= -1;
-              tile.y += tileheight;
-            }
-            if (flippedD) {
-              tile.rotation = Math.PI / 2;
-              tile.x += tileheight;
-            }
+          const gid = rawGid & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
+          const tileIndex = gid - map.tilesets[0].firstgid;
+          const texture = textures[tileIndex];
+          if (!texture) continue;
 
-            this.parent.addChild(tile);
-            tiles.push(tile);
-          }
+          const tile = new Sprite(texture);
+          tile.roundPixels = true;
+          tile.width = tilewidth;
+          tile.height = tileheight;
+
+          tile.anchor.set(0.5);
+          tile.x = col * tilewidth + tilewidth / 2;
+          tile.y = row * tileheight + tileheight / 2;
+
+          applyTiledFlags(tile, flippedH, flippedV, flippedD);
+
+          layerContainer.addChild(tile);
         }
       }
 
-      if (layer.type === "objectgroup") {
-        for (const obj of layer.objects) {
-          if (obj.name === "PlayerSpawn") {
-            console.log("Player spawn at:", obj.x, obj.y);
-            // 👉 ici tu pourras positionner ton player
-          }
-        }
-      }
+      console.log(layer);
+      console.log(!!getCustomProperty<boolean>(layer, "collide"));
+      layerContainers.push({ container: layerContainer, collide: !!getCustomProperty<boolean>(layer, "collide") });
     }
 
-    return tiles;
+    return layerContainers;
   }
+}
+
+function applyTiledFlags(tile: Sprite, flippedH: boolean, flippedV: boolean, flippedD: boolean) {
+  tile.rotation = 0;
+  tile.scale.set(1, 1);
+
+  // mask H V D -> 4 2 1
+  const mask = (flippedH ? 4 : 0) | (flippedV ? 2 : 0) | (flippedD ? 1 : 0);
+
+  switch (mask) {
+    case 0: // ---
+      // rot 0
+      break;
+
+    case 4: // H--
+      // flip X
+      tile.scale.x = -1;
+      break;
+
+    case 2: // -V-
+      // flip Y
+      tile.scale.y = -1;
+      break;
+
+    case 1: // --D
+      // rot 90 + flip X
+      tile.rotation = Math.PI / 2;
+      tile.scale.x = -1;
+      break;
+
+    case 6: // HV-
+      // rot 180
+      tile.rotation = Math.PI;
+      break;
+
+    case 5: // H-D
+      // rot 90
+      tile.rotation = Math.PI / 2;
+      break;
+
+    case 3: // -VD
+      // rot 270
+      tile.rotation = (3 * Math.PI) / 2;
+      break;
+
+    case 7: // HVD
+      // rot 270 + flip X
+      tile.rotation = (3 * Math.PI) / 2;
+      tile.scale.x = -1;
+      break;
+  }
+}
+
+function getCustomProperty<T>(layer: TiledLayer, name: string) {
+  return layer.properties?.find((p) => p.name === name)?.value as T | undefined;
 }

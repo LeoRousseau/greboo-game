@@ -26,17 +26,24 @@ export class Level {
     this.content = new Container();
     this.world.addChild(this.content);
 
-    this.player.addTo(this.content);
-
     this.camera = new Camera(this.player, this.world);
     this.input = new InputManager();
 
-    this.init();
+    this.init().then(() => {
+      const mid = this.content.getChildByLabel("mid");
+      console.log(mid);
+      this.player.addTo(this.content, mid ? this.content.getChildIndex(mid) + 1 : 0);
+      console.log(this.content.children);
+    });
   }
 
   async init() {
     await this.background.init([{ src: "./sky.jpg", factor: 0.1 }]);
-    this.tiles = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
+    const data = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
+    const collidingLayer: { container: Container; collide: boolean } | undefined = data.find((l) => l.collide);
+    if (collidingLayer) {
+      this.tiles = collidingLayer.container.children as Sprite[];
+    }
   }
 
   update() {

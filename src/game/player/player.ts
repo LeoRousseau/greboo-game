@@ -38,8 +38,8 @@ export class Player {
     this.sprite.endFill();
   }
 
-  addTo(container: Container) {
-    container.addChild(this.sprite);
+  addTo(container: Container, index = 0) {
+    container.addChildAt(this.sprite, index);
     this.updateSprite();
   }
 
