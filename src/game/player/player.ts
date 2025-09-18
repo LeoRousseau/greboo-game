@@ -1,6 +1,6 @@
 import { Graphics, Container } from "pixi.js";
 
-type Rect = { x: number; y: number; width: number; height: number };
+export type Rect = { x: number; y: number; w: number; h: number };
 
 export class Player {
   public sprite: Graphics;
@@ -13,21 +13,21 @@ export class Player {
   private halfW = 15; // ellipse rx
   private halfH = 30; // ellipse ry
 
-  // Physique (valeurs par frame si tu n'utilises pas dt)
+  // Physique
   private gravity = 0.2;
   private maxFall = 10;
-  private speed = 5; // vitesse max horizontale
-  private accel = 1.2; // accélération au sol
-  private airAccel = 0.6; // accélération en l’air
-  private friction = 0.85; // friction au sol
-  private jumpStrength = -13; // impulsion de saut
+  private speed = 5;
+  private accel = 1.2;
+  private airAccel = 0.6;
+  private friction = 0.85;
+  private jumpStrength = -13;
 
   // États
   private onGround = false;
 
-  // Quality of life platformer
-  private jumpBufferFrames = 6; // sauter juste après avoir pressé jump
-  private coyoteFrames = 6; // sauter juste après avoir quitté le sol
+  // Buffer saut
+  private jumpBufferFrames = 6;
+  private coyoteFrames = 6;
   private jumpBuffer = 0;
   private coyote = 0;
 
@@ -65,74 +65,65 @@ export class Player {
 
   private intersects(tile: Rect) {
     const a = this.getAABB();
-    const b = { left: tile.x, right: tile.x + tile.width, top: tile.y, bottom: tile.y + tile.height };
+    const b = { left: tile.x, right: tile.x + tile.w, top: tile.y, bottom: tile.y + tile.h };
     return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
   }
 
   update(input: { left: boolean; right: boolean; jump: boolean }, tiles: Rect[]) {
-    // -- Jump buffer & coyote time (en frames)
+    // -- Jump buffer & coyote
     if (input.jump) this.jumpBuffer = this.jumpBufferFrames;
     else if (this.jumpBuffer > 0) this.jumpBuffer--;
 
     if (this.onGround) this.coyote = this.coyoteFrames;
     else if (this.coyote > 0) this.coyote--;
 
-    // -- Contrôle horizontal : accélération/friction
+    // -- Mouvement horizontal
     const want = (input.left ? -1 : 0) + (input.right ? 1 : 0);
     const targetVx = want * this.speed;
     const a = this.onGround ? this.accel : this.airAccel;
 
     if (want !== 0) {
-      // accélère vers target
       if (this.vx < targetVx) this.vx = Math.min(targetVx, this.vx + a);
       if (this.vx > targetVx) this.vx = Math.max(targetVx, this.vx - a);
     } else if (this.onGround) {
-      // friction au sol
       this.vx *= this.friction;
       if (Math.abs(this.vx) < 0.05) this.vx = 0;
     }
 
-    // -- Variable jump : si on relâche jump pendant la montée, alourdit un peu
+    // -- Gravité + jump variable
     const extraGravity = this.vy < 0 && !input.jump ? 0.6 : 0;
-
-    // -- Gravité
     this.vy += this.gravity + extraGravity;
     if (this.vy > this.maxFall) this.vy = this.maxFall;
 
-    // === Déplacement HORIZONTAL + résolution de collision ===
+    // === HORIZONTAL ===
     this.x += this.vx;
     for (const t of tiles) {
       if (!this.intersects(t)) continue;
-      // on poussse hors du tile selon la direction
       if (this.vx > 0) {
-        // venant de la gauche
         this.x = t.x - this.halfW;
       } else if (this.vx < 0) {
-        // venant de la droite
-        this.x = t.x + t.width + this.halfW;
+        this.x = t.x + t.w + this.halfW;
       }
       this.vx = 0;
     }
 
-    // === Déplacement VERTICAL + résolution de collision ===
+    // === VERTICAL ===
     this.onGround = false;
     this.y += this.vy;
     for (const t of tiles) {
       if (!this.intersects(t)) continue;
 
       if (this.vy > 0) {
-        // chute → poser sur le sol
         this.y = t.y - this.halfH;
         this.vy = 0;
         this.onGround = true;
       } else if (this.vy < 0) {
-        // tête heurte le plafond
-        this.y = t.y + t.height + this.halfH;
+        this.y = t.y + t.h + this.halfH;
         this.vy = 0;
       }
     }
 
-    // === Saut avec buffer & coyote ===
+    // === SAUT ===
     if (this.jumpBuffer > 0 && (this.onGround || this.coyote > 0)) {
       this.vy = this.jumpStrength;
       this.onGround = false;

@@ -1,12 +1,13 @@
-import { Application, Container, Sprite } from "pixi.js";
+import { Application, Container } from "pixi.js";
 import { Camera } from "../player/camera";
 import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
 import { Parallax } from "./Parallax";
 import { TiledLoader } from "../tile/loader/TiledLoader";
+import type { TCollisionRect } from "../tile/collision/TCollisionRect";
 
 export class Level {
-  tiles: Sprite[] = [];
+  collisionData: TCollisionRect[] = [];
   camera: Camera;
   input: InputManager;
 
@@ -40,10 +41,7 @@ export class Level {
   async init() {
     await this.background.init([{ src: "./sky.jpg", factor: 0.1 }]);
     const data = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
-    const collidingLayer: { container: Container; collide: boolean } | undefined = data.find((l) => l.collide);
-    if (collidingLayer) {
-      this.tiles = collidingLayer.container.children as Sprite[];
-    }
+    this.collisionData = data.collisions;
   }
 
   update() {
@@ -53,7 +51,7 @@ export class Level {
         right: this.input.isDown("ArrowRight") || this.input.isDown("KeyD"),
         jump: this.input.isDown("Space"),
       },
-      this.tiles
+      this.collisionData
     );
 
     this.camera.update();

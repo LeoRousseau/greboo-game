@@ -1,5 +1,7 @@
 import { Assets, Container, Rectangle, Sprite, Texture } from "pixi.js";
-import type { TiledLayer, TiledMap } from "../Tiled";
+import type { TiledLayer, TiledMap, TiledTileLayer } from "../Tiled";
+import type { TCollisionRect } from "../collision/TCollisionRect";
+import { generateCollisionTiles } from "../collision/generateCollisionTiles";
 
 const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
 const FLIPPED_VERTICALLY_FLAG = 0x40000000;
@@ -8,7 +10,10 @@ const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 export class TiledLoader {
   constructor(private parent: Container) {}
 
-  async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<{ container: Container; collide: boolean }[]> {
+  async loadMap(
+    mapUrl: string,
+    tilesetImageUrl: string
+  ): Promise<{ layers: Container[]; collisions: TCollisionRect[] }> {
     const map: TiledMap = await (await fetch(mapUrl)).json();
     const tileset = await (await fetch(map.tilesets[0].source)).json();
     const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);
@@ -25,7 +30,7 @@ export class TiledLoader {
       });
     });
 
-    const layerContainers: { container: Container; collide: boolean }[] = [];
+    const layerContainers: Container[] = [];
 
     for (const layer of layers) {
       if (layer.type !== "tilelayer") continue;
@@ -65,12 +70,12 @@ export class TiledLoader {
         }
       }
 
-      console.log(layer);
-      console.log(!!getCustomProperty<boolean>(layer, "collide"));
-      layerContainers.push({ container: layerContainer, collide: !!getCustomProperty<boolean>(layer, "collide") });
+      layerContainers.push(layerContainer);
     }
 
-    return layerContainers;
+    const collisionLayer = layers.find((l) => getCustomProperty<boolean>(l, "collide"));
+    const collisionData = collisionLayer ? generateCollisionTiles(collisionLayer as TiledTileLayer, map) : [];
+    return { layers: layerContainers, collisions: collisionData };
   }
 }
 
