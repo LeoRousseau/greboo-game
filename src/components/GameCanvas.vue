@@ -4,9 +4,19 @@ import { useAppStore } from "../store/appStore";
 import { Engine } from "../game/engine/Engine";
 import { Level } from "../game/scene/Level";
 import { Player } from "../game/player/player";
+import { DebugController } from "../game/debug/DebugController";
 
 const container = ref<HTMLDivElement | null>(null);
 const appStore = useAppStore();
+
+let debugController: DebugController;
+
+const handleDebugEvents = (e: KeyboardEvent) => {
+  console.log(e.key);
+  if (e.key === "1") {
+    debugController?.toggleCollision();
+  }
+};
 
 onMounted(async () => {
   if (container.value) {
@@ -21,10 +31,16 @@ onMounted(async () => {
     });
 
     appStore.engine.start();
+
+    setTimeout(() => {
+      debugController = new DebugController(level, player, appStore.engine!);
+      window.addEventListener("keyup", handleDebugEvents);
+    }, 1000);
   }
 });
 
 onUnmounted(() => {
+  window.removeEventListener("keyup", handleDebugEvents);
   appStore.engine?.dispose();
   appStore.engine = null;
 });

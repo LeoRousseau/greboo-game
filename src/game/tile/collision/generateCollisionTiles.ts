@@ -1,10 +1,10 @@
 import type { TiledMap, TiledTileLayer } from "../../tile/Tiled";
-import type { TCollisionRect } from "./TCollisionRect";
+import type { Rect } from "./Rect";
 
-export function generateCollisionTiles(collisionLayer: TiledTileLayer, map: TiledMap): TCollisionRect[] {
+export function generateCollisionTiles(collisionLayer: TiledTileLayer, map: TiledMap): Rect[] {
   const { width, height, data } = collisionLayer;
   const { tilewidth, tileheight } = map;
-  const result: TCollisionRect[] = [];
+  const result: Rect[] = [];
 
   for (let row = 0; row < height; row++) {
     for (let col = 0; col < width; col++) {

@@ -1,4 +1,4 @@
-export interface TCollisionRect {
+export interface Rect {
   x: number;
   y: number;
   w: number;

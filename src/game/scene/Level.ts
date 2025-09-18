@@ -4,10 +4,10 @@ import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
 import { Parallax } from "./Parallax";
 import { TiledLoader } from "../tile/loader/TiledLoader";
-import type { TCollisionRect } from "../tile/collision/TCollisionRect";
+import type { Rect } from "../tile/collision/Rect";
 
 export class Level {
-  collisionData: TCollisionRect[] = [];
+  collisionData: Rect[] = [];
   camera: Camera;
   input: InputManager;
 
@@ -32,9 +32,7 @@ export class Level {
 
     this.init().then(() => {
       const mid = this.content.getChildByLabel("mid");
-      console.log(mid);
       this.player.addTo(this.content, mid ? this.content.getChildIndex(mid) + 1 : 0);
-      console.log(this.content.children);
     });
   }
 

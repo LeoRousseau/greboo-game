@@ -1,6 +1,6 @@
 import { Assets, Container, Rectangle, Sprite, Texture } from "pixi.js";
 import type { TiledLayer, TiledMap, TiledTileLayer } from "../Tiled";
-import type { TCollisionRect } from "../collision/TCollisionRect";
+import type { Rect } from "../collision/Rect";
 import { generateCollisionTiles } from "../collision/generateCollisionTiles";
 
 const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
@@ -10,10 +10,7 @@ const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 export class TiledLoader {
   constructor(private parent: Container) {}
 
-  async loadMap(
-    mapUrl: string,
-    tilesetImageUrl: string
-  ): Promise<{ layers: Container[]; collisions: TCollisionRect[] }> {
+  async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<{ layers: Container[]; collisions: Rect[] }> {
     const map: TiledMap = await (await fetch(mapUrl)).json();
     const tileset = await (await fetch(map.tilesets[0].source)).json();
     const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);
