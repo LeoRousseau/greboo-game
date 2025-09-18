@@ -70,7 +70,6 @@ export class Player {
   }
 
   update(input: { left: boolean; right: boolean; jump: boolean }, tiles: Rect[]) {
-    // -- Jump buffer & coyote
     if (input.jump) this.jumpBuffer = this.jumpBufferFrames;
     else if (this.jumpBuffer > 0) this.jumpBuffer--;
 
