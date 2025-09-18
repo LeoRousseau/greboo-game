@@ -4,10 +4,10 @@ import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
 import { Parallax } from "./Parallax";
 import { TiledLoader } from "../tile/loader/TiledLoader";
-import type { Rect } from "../tile/collision/Shape";
+import type { Shape } from "../tile/collision/Shape";
 
 export class Level {
-  collisionData: Rect[] = [];
+  collisionData: Shape[] = [];
   camera: Camera;
   input: InputManager;
 

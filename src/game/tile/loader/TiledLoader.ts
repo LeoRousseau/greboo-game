@@ -9,13 +9,13 @@ import {
   type TiledTileLayer,
   type TiledTileset,
 } from "../Tiled";
-import type { Rect } from "../collision/Shape";
+import type { Shape } from "../collision/Shape";
 import { generateCollisionTiles } from "../collision/generateCollisionTiles";
 
 export class TiledLoader {
   constructor(private parent: Container) {}
 
-  async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<{ layers: Container[]; collisions: Rect[] }> {
+  async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<{ layers: Container[]; collisions: Shape[] }> {
     const map: TiledMap = await (await fetch(mapUrl)).json();
     const tileset: TiledTileset = await (await fetch(map.tilesets[0].source)).json();
     const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);

@@ -46,13 +46,6 @@ export function generateCollisionTiles(collisionLayer: TiledTileLayer, map: Tile
           h: tileheight,
           orientation: getTriangleOrientation(flippedH, flippedV, flippedD),
         });
-
-        console.log(
-          row,
-          col,
-          getTriangleOrientation(flippedH, flippedV, flippedD),
-          (flippedH ? 4 : 0) | (flippedV ? 2 : 0) | (flippedD ? 1 : 0)
-        );
       } else {
         result.push({
           x: col * tilewidth,
