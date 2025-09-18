@@ -92,7 +92,7 @@ export interface TiledObject {
   height?: number;
   rotation?: number;
   visible: boolean;
-  gid?: number; // si c'est une tuile utilisée comme objet
+  gid?: number;
   properties?: TiledProperty[];
 }
 

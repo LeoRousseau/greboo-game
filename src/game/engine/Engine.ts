@@ -10,7 +10,7 @@ export class Engine {
   }
 
   async init() {
-    await this.application.init({ background: "#1099bb", resizeTo: window });
+    await this.application.init({ background: "#1099bb", resizeTo: this.parent });
     this.parent.appendChild(this.application.canvas);
     this.application.stage.addChild(this.world);
   }

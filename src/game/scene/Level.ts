@@ -3,7 +3,7 @@ import { Camera } from "../player/camera";
 import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
 import { Parallax } from "./Parallax";
-import { TiledLoader } from "./TiledLoader";
+import { TiledLoader } from "../tile/loader/TiledLoader";
 
 export class Level {
   tiles: Sprite[] = [];

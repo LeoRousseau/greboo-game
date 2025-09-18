@@ -1,5 +1,5 @@
 import { Assets, Container, Rectangle, Sprite, Texture } from "pixi.js";
-import type { TiledLayer, TiledMap } from "./Tiled";
+import type { TiledLayer, TiledMap } from "../Tiled";
 
 const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
 const FLIPPED_VERTICALLY_FLAG = 0x40000000;
