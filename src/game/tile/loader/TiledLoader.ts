@@ -1,18 +1,23 @@
 import { Assets, Container, Rectangle, Sprite, Texture } from "pixi.js";
-import type { TiledLayer, TiledMap, TiledTileLayer } from "../Tiled";
-import type { Rect } from "../collision/Rect";
+import {
+  FLIPPED_DIAGONALLY_FLAG,
+  FLIPPED_HORIZONTALLY_FLAG,
+  FLIPPED_VERTICALLY_FLAG,
+  getCustomProperty,
+  getTileIndexFromRawGID,
+  type TiledMap,
+  type TiledTileLayer,
+  type TiledTileset,
+} from "../Tiled";
+import type { Rect } from "../collision/Shape";
 import { generateCollisionTiles } from "../collision/generateCollisionTiles";
-
-const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
-const FLIPPED_VERTICALLY_FLAG = 0x40000000;
-const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 
 export class TiledLoader {
   constructor(private parent: Container) {}
 
   async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<{ layers: Container[]; collisions: Rect[] }> {
     const map: TiledMap = await (await fetch(mapUrl)).json();
-    const tileset = await (await fetch(map.tilesets[0].source)).json();
+    const tileset: TiledTileset = await (await fetch(map.tilesets[0].source)).json();
     const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);
 
     const { tilewidth, tileheight, layers, width, height } = map;
@@ -47,8 +52,7 @@ export class TiledLoader {
           const flippedV = (rawGid & FLIPPED_VERTICALLY_FLAG) !== 0;
           const flippedD = (rawGid & FLIPPED_DIAGONALLY_FLAG) !== 0;
 
-          const gid = rawGid & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
-          const tileIndex = gid - map.tilesets[0].firstgid;
+          const tileIndex = getTileIndexFromRawGID(rawGid, map.tilesets[0].firstgid);
           const texture = textures[tileIndex];
           if (!texture) continue;
 
@@ -71,7 +75,7 @@ export class TiledLoader {
     }
 
     const collisionLayer = layers.find((l) => getCustomProperty<boolean>(l, "collide"));
-    const collisionData = collisionLayer ? generateCollisionTiles(collisionLayer as TiledTileLayer, map) : [];
+    const collisionData = collisionLayer ? generateCollisionTiles(collisionLayer as TiledTileLayer, map, tileset) : [];
     return { layers: layerContainers, collisions: collisionData };
   }
 }
@@ -125,8 +129,4 @@ function applyTiledFlags(tile: Sprite, flippedH: boolean, flippedV: boolean, fli
       tile.scale.x = -1;
       break;
   }
-}
-
-function getCustomProperty<T>(layer: TiledLayer, name: string) {
-  return layer.properties?.find((p) => p.name === name)?.value as T | undefined;
 }

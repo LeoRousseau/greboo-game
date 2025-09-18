@@ -12,7 +12,6 @@ const appStore = useAppStore();
 let debugController: DebugController;
 
 const handleDebugEvents = (e: KeyboardEvent) => {
-  console.log(e.key);
   if (e.key === "1") {
     debugController?.toggleCollision();
   }

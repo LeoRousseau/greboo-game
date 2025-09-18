@@ -8,6 +8,25 @@
  "tilecount":24,
  "tiledversion":"1.11.2",
  "tileheight":64,
+ "tiles":[
+        {
+         "id":19,
+         "properties":[
+                {
+                 "name":"isTriangle",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":20,
+         "properties":[
+                {
+                 "name":"isTriangle",
+                 "type":"bool",
+                 "value":true
+                }]
+        }],
  "tilewidth":64,
  "type":"tileset",
  "version":"1.10"

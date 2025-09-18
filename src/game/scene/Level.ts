@@ -4,7 +4,7 @@ import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
 import { Parallax } from "./Parallax";
 import { TiledLoader } from "../tile/loader/TiledLoader";
-import type { Rect } from "../tile/collision/Rect";
+import type { Rect } from "../tile/collision/Shape";
 
 export class Level {
   collisionData: Rect[] = [];

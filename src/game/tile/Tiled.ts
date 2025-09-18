@@ -72,7 +72,7 @@ export interface TiledTileset {
   image: string;
   imagewidth: number;
   imageheight: number;
-  tiles?: TiledTile[];
+  tiles: TiledTile[];
 }
 
 export interface TiledTile {
@@ -105,3 +105,16 @@ export type TiledProperty =
   | { name: string; type: "color"; value: string }
   | { name: string; type: "file"; value: string }
   | { name: string; type: "object"; value: number };
+
+export function getCustomProperty<T>(el: TiledLayer | TiledObject | TiledTile, name: string) {
+  return el?.properties?.find((p) => p.name === name)?.value as T | undefined;
+}
+
+export const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+export const FLIPPED_VERTICALLY_FLAG = 0x40000000;
+export const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+
+export function getTileIndexFromRawGID(rawGid: number, firstGid: number) {
+  const gid = rawGid & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
+  return gid - firstGid;
+}

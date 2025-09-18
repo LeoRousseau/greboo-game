@@ -1,5 +1,5 @@
 import { Graphics, Container } from "pixi.js";
-import type { Rect } from "../tile/collision/Rect";
+import type { Rect } from "../tile/collision/Shape";
 
 export class Player {
   public sprite: Graphics;
