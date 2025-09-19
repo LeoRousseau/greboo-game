@@ -2,9 +2,8 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { useAppStore } from "../store/appStore";
 import { Engine } from "../game/engine/Engine";
-import { Level } from "../game/scene/Level";
-import { Player } from "../game/player/player";
 import { DebugController } from "../game/debug/DebugController";
+import { Game } from "../game/game/Game";
 
 const container = ref<HTMLDivElement | null>(null);
 const appStore = useAppStore();
@@ -19,20 +18,15 @@ const handleDebugEvents = (e: KeyboardEvent) => {
 
 onMounted(async () => {
   if (container.value) {
+    const engine = new Engine(container.value);
+    await engine.init();
     appStore.engine = new Engine(container.value);
-    await appStore.engine.init();
 
-    const player = new Player();
-    const level = new Level(appStore.engine.application, appStore.engine.world, player);
-
-    appStore.engine.application.ticker.add(() => {
-      level.update();
-    });
-
-    appStore.engine.start();
+    const game = new Game(engine);
+    game.start();
 
     setTimeout(() => {
-      debugController = new DebugController(level, player, appStore.engine!);
+      debugController = new DebugController(game);
       window.addEventListener("keyup", handleDebugEvents);
     }, 1000);
   }

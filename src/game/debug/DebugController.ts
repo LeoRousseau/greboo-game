@@ -1,21 +1,15 @@
 import { Container } from "pixi.js";
-import type { Level } from "../scene/Level";
-import type { Player } from "../player/player";
-import type { Engine } from "../engine/Engine";
 import { drawCollisionDebug } from "./collision";
+import type { Game } from "../game/Game";
 
 export class DebugController {
   debugContainer: Container;
 
   _collisionDisplayed = false;
 
-  constructor(
-    readonly level: Level,
-    readonly player: Player,
-    readonly engine: Engine
-  ) {
+  constructor(readonly game: Game) {
     this.debugContainer = new Container();
-    this.level.content.addChild(this.debugContainer);
+    this.game.currentLevel.content.addChild(this.debugContainer);
   }
 
   toggleCollision() {
@@ -24,7 +18,7 @@ export class DebugController {
   }
 
   displayCollision(value: boolean) {
-    if (value) drawCollisionDebug(this.debugContainer, this.level.collisionData);
+    if (value) drawCollisionDebug(this.debugContainer, this.game.currentLevel.collisionData);
     else this.debugContainer.removeChildren();
   }
 }
