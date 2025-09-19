@@ -5,22 +5,23 @@ export class PlayerMovement {
   readonly footSensor: Matter.Body;
   readonly engine: Matter.Engine;
 
-  // Suivi des collisions
-  private contacts = new Set<Matter.Body>();
+  private contacts = new Set<Matter.Body>(); // foot contacts
 
-  // Sauts
   private canDoubleJump = true;
+
+  defaultSpeed = 2;
+  jumpSpeed = 10;
 
   constructor(engine: Matter.Engine, x: number, y: number) {
     this.engine = engine;
 
-    const body = Matter.Bodies.rectangle(100, 100, 25, 60, {
+    const body = Matter.Bodies.rectangle(x, y, 25, 60, {
       restitution: 0,
       friction: 0.1,
       inertia: Infinity, // disable rotation,
     });
 
-    this.footSensor = Matter.Bodies.rectangle(100, 130, 20, 8, {
+    this.footSensor = Matter.Bodies.rectangle(x, y + 30, 20, 8, {
       isSensor: true,
       isStatic: false,
     });
@@ -31,7 +32,6 @@ export class PlayerMovement {
 
     Matter.Body.setCentre(this.body, { x: 100, y: 100 });
 
-    // Écoute les collisions
     Matter.Events.on(this.engine, "collisionStart", (event) => {
       event.pairs.forEach((pair) => {
         if (this.areFootInPair(pair)) {
@@ -64,18 +64,15 @@ export class PlayerMovement {
   }
 
   update(input: { left: boolean; right: boolean; jump: boolean }) {
-    const speed = 2;
-
-    // Déplacement gauche/droite
-    if (input.left) Matter.Body.setVelocity(this.body, { x: -speed, y: this.body.velocity.y });
-    if (input.right) Matter.Body.setVelocity(this.body, { x: speed, y: this.body.velocity.y });
+    if (input.left) Matter.Body.setVelocity(this.body, { x: -this.defaultSpeed, y: this.body.velocity.y });
+    if (input.right) Matter.Body.setVelocity(this.body, { x: this.defaultSpeed, y: this.body.velocity.y });
 
     if (input.jump) {
       if (this.isOnGround()) {
-        Matter.Body.setVelocity(this.body, { x: this.body.velocity.x, y: -8 });
+        Matter.Body.setVelocity(this.body, { x: this.body.velocity.x, y: -this.jumpSpeed });
         this.canDoubleJump = true;
       } else if (this.canDoubleJump) {
-        Matter.Body.setVelocity(this.body, { x: this.body.velocity.x, y: -8 });
+        Matter.Body.setVelocity(this.body, { x: this.body.velocity.x, y: -this.jumpSpeed });
         this.canDoubleJump = false;
       }
     }
