@@ -13,6 +13,8 @@ let debugController: DebugController;
 const handleDebugEvents = (e: KeyboardEvent) => {
   if (e.key === "1") {
     debugController?.toggleCollision();
+  } else if (e.key === "2") {
+    debugController.togglePhysicsCollision();
   }
 };
 
