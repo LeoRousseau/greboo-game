@@ -22,7 +22,7 @@ onMounted(async () => {
   if (container.value) {
     const engine = new Engine(container.value);
     await engine.init();
-    appStore.engine = new Engine(container.value);
+    appStore.engine = engine;
 
     const game = new Game(engine);
     game.start();

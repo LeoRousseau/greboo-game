@@ -112,7 +112,7 @@ export class Level {
     this.player.update({
       left: this.input.isDown("ArrowLeft") || this.input.isDown("KeyA"),
       right: this.input.isDown("ArrowRight") || this.input.isDown("KeyD"),
-      jump: this.input.isDown("Space"),
+      jump: this.input.onDown("Space"),
     });
 
     this.camera.update();
