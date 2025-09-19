@@ -10,8 +10,8 @@ export class Camera {
   ) {}
 
   update() {
-    this.container.x = -this.player.x + window.innerWidth / 2;
-    let targetY = -this.player.y + window.innerHeight / 2;
+    this.container.x = -this.player.sprite.x + window.innerWidth / 2;
+    let targetY = -this.player.sprite.y + window.innerHeight / 2;
 
     if (targetY < this.minY) targetY = this.minY;
     if (targetY > this.maxY) targetY = this.maxY;

@@ -1,5 +1,5 @@
 import { Application, Container } from "pixi.js";
-import * as Matter from "matter-js";
+import Matter from "matter-js";
 
 export class Engine {
   readonly application: Application;
@@ -7,10 +7,14 @@ export class Engine {
 
   readonly physicsEngine: Matter.Engine;
 
+  get physicsWorld(): Matter.World {
+    return this.physicsEngine.world;
+  }
+
   constructor(readonly parent: HTMLElement) {
     this.application = new Application();
     this.world = new Container();
-    this.physicsEngine = new Matter.Engine();
+    this.physicsEngine = Matter.Engine.create();
   }
 
   async init() {
