@@ -1,10 +1,10 @@
 import { Application, Container, TilingSprite, Assets } from "pixi.js";
 
-type LayerCfg = { src: string; factor: number };
+type LayerCfg = { src: string; factor: { x: number; y: number }; preservHeight?: boolean };
 
 export class Parallax {
   private container = new Container();
-  private layers: { sprite: TilingSprite; factor: number }[] = [];
+  private layers: { sprite: TilingSprite; factor: { x: number; y: number } }[] = [];
 
   constructor(
     private app: Application,
@@ -20,7 +20,11 @@ export class Parallax {
   async init(config: LayerCfg[]) {
     for (const { src, factor } of config) {
       const tex = await Assets.load(src);
-      const spr = new TilingSprite({ texture: tex, width: this.app.screen.width, height: this.app.screen.height });
+      const spr = new TilingSprite({
+        texture: tex,
+        width: this.app.screen.width,
+        height: this.app.screen.height,
+      });
       spr.position.set(0, 0);
       this.container.addChild(spr);
       this.layers.push({ sprite: spr, factor });
@@ -29,8 +33,8 @@ export class Parallax {
 
   update() {
     for (const { sprite, factor } of this.layers) {
-      sprite.tilePosition.x = this.world.x * factor;
-      sprite.tilePosition.y = this.world.y * factor * 0.2;
+      sprite.tilePosition.x = this.world.x * factor.x;
+      sprite.tilePosition.y = this.world.y * factor.y;
     }
   }
 

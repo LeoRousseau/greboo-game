@@ -39,7 +39,10 @@ export class Level {
   }
 
   async init() {
-    await this.background.init([{ src: "./sky.jpg", factor: 0.1 }]);
+    await this.background.init([
+      { src: "./bg_ground.jpeg", factor: { x: 1, y: 1 } },
+      { src: "./bg_trees1.png", factor: { x: 0.95, y: 1 }, preservHeight: true },
+    ]);
     const data = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
     this.collisionData = data.collisions;
 
