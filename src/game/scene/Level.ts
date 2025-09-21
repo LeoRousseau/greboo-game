@@ -2,11 +2,12 @@ import { Container } from "pixi.js";
 import { Camera } from "../player/camera";
 import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
-import { Parallax } from "./Parallax";
 import { TiledLoader } from "../tile/loader/TiledLoader";
 import type { Shape } from "../tile/collision/Shape";
 import Matter from "matter-js";
 import type { Engine } from "../engine/Engine";
+import { Underground } from "./Underground";
+import { HorizontalParallax } from "./HorizontalParallax";
 
 export class Level {
   collisionData: Shape[] = [];
@@ -15,7 +16,9 @@ export class Level {
 
   bgContainer: Container;
   content: Container;
-  background: Parallax;
+
+  underground: Underground;
+  hParallax: HorizontalParallax;
 
   constructor(
     readonly engine: Engine,
@@ -24,7 +27,9 @@ export class Level {
   ) {
     this.bgContainer = new Container();
     this.world.addChild(this.bgContainer);
-    this.background = new Parallax(engine.application, this.world);
+
+    this.underground = new Underground(engine.application, this.world, { invertY: true });
+    this.hParallax = new HorizontalParallax(engine.application, this.world, true);
 
     this.content = new Container();
     this.world.addChild(this.content);
@@ -39,10 +44,12 @@ export class Level {
   }
 
   async init() {
-    await this.background.init([
-      { src: "./bg_ground.jpeg", factor: { x: 1, y: 1 } },
-      { src: "./bg_trees1.png", factor: { x: 0.95, y: 1 }, preservHeight: true },
+    await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1100 } });
+    await this.hParallax.init([
+      { src: "sky.jpg", factorX: 0.2, y: 512 },
+      { src: "bg_trees1.png", factorX: 1, y: 512 },
     ]);
+
     const data = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
     this.collisionData = data.collisions;
 
@@ -119,7 +126,8 @@ export class Level {
     });
 
     this.camera.update();
-    this.background.update();
+    this.underground.update();
+    this.hParallax.update();
   }
 
   syncWithPhysics() {
