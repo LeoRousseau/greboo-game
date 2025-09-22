@@ -19,11 +19,13 @@ export class PlayerMovement {
       restitution: 0,
       friction: 0.1,
       inertia: Infinity, // disable rotation,
+      label: "player",
     });
 
     this.footSensor = Matter.Bodies.rectangle(x, y + 30, 20, 8, {
       isSensor: true,
       isStatic: false,
+      label: "player",
     });
 
     this.body = Matter.Body.create({
@@ -37,6 +39,10 @@ export class PlayerMovement {
         if (this.areFootInPair(pair)) {
           const other = this.otherBody(pair);
           this.contacts.add(other);
+        }
+
+        if (this.collideWithEnemy(pair)) {
+          console.log("DEATH");
         }
       });
     });
@@ -57,6 +63,13 @@ export class PlayerMovement {
 
   private otherBody(pair: Matter.Pair) {
     return pair.bodyA === this.footSensor ? pair.bodyB : pair.bodyA;
+  }
+
+  private collideWithEnemy(pair: Matter.Pair) {
+    return (
+      (pair.bodyA.label === "enemy" || pair.bodyB.label === "enemy") &&
+      (pair.bodyA.label === "player" || pair.bodyB.label === "player")
+    );
   }
 
   isOnGround(): boolean {

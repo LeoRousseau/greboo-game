@@ -12,7 +12,7 @@ export class Player {
 
   constructor(readonly engine: Engine) {
     this.sprite = new Graphics();
-    this.sprite.beginFill(0xff0000);
+    this.sprite.beginFill(0x0000ff);
     this.sprite.drawEllipse(0, 0, 15, 30);
     this.sprite.endFill();
 

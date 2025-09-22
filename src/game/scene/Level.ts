@@ -8,6 +8,7 @@ import Matter from "matter-js";
 import type { Engine } from "../engine/Engine";
 import { Underground } from "./Underground";
 import { HorizontalParallax } from "./HorizontalParallax";
+import { DefaultEnemy } from "../enemy/DefaultEnemy";
 
 export class Level {
   collisionData: Shape[] = [];
@@ -19,6 +20,8 @@ export class Level {
 
   underground: Underground;
   hParallax: HorizontalParallax;
+
+  enemies: DefaultEnemy[] = [];
 
   constructor(
     readonly engine: Engine,
@@ -40,6 +43,13 @@ export class Level {
     this.init().then(() => {
       const mid = this.content.getChildByLabel("mid");
       this.player.addTo(this.content, mid ? this.content.getChildIndex(mid) + 1 : 0);
+
+      const en1 = new DefaultEnemy(this.engine, [
+        { x: 1600, y: 1650 },
+        { x: 2100, y: 1650 },
+      ]);
+      this.enemies.push(en1);
+      en1.addTo(this.content, this.content.children.length);
     });
   }
 
@@ -47,7 +57,8 @@ export class Level {
     await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1100 } });
     await this.hParallax.init([
       { src: "sky.jpg", factorX: 0.2, y: 512 },
-      { src: "bg_trees1.png", factorX: 1, y: 512 },
+      { src: "bg_trees1.png", factorX: 0.9, y: 512 },
+      { src: "bg_bush.png", factorX: 1, y: 512 },
     ]);
 
     const data = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
@@ -128,6 +139,7 @@ export class Level {
     this.camera.update();
     this.underground.update();
     this.hParallax.update();
+    this.enemies.forEach((e) => e.update());
   }
 
   syncWithPhysics() {
