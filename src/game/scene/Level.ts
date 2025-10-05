@@ -9,6 +9,7 @@ import type { Engine } from "../engine/Engine";
 import { Underground } from "./Underground";
 import { HorizontalParallax } from "./HorizontalParallax";
 import { DefaultEnemy } from "../enemy/DefaultEnemy";
+import { Collectable } from "../collectable/Collectable";
 
 export class Level {
   collisionData: Shape[] = [];
@@ -50,6 +51,9 @@ export class Level {
       ]);
       this.enemies.push(en1);
       en1.addTo(this.content, this.content.children.length);
+
+      const pinecones = new Collectable({ x: 1600, y: 1300 });
+      pinecones.addTo(this.content, this.content.children.length);
     });
   }
 

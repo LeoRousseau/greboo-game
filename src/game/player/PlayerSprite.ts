@@ -33,8 +33,9 @@ export class PlayerSprite {
 
     // Sprite initial
     this.sprite = new PIXI.AnimatedSprite(this.animations.jump);
-
+    this.sprite.scale.y *= 1.8;
     this.sprite.anchor.set(0.5);
+
     this.sprite.animationSpeed = 0.1;
     this.sprite.play();
   }
