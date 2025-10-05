@@ -1,9 +1,10 @@
-import { Graphics, Container } from "pixi.js";
+import { Assets, Container, Spritesheet } from "pixi.js";
 import type { Engine } from "../engine/Engine";
 import { PlayerMovement } from "./playerMovement";
+import { PlayerSprite } from "./PlayerSprite";
 
 export class Player {
-  readonly sprite: Graphics;
+  sprite?: PlayerSprite;
   readonly movement: PlayerMovement;
 
   get body() {
@@ -11,16 +12,15 @@ export class Player {
   }
 
   constructor(readonly engine: Engine) {
-    this.sprite = new Graphics();
-    this.sprite.beginFill(0x0000ff);
-    this.sprite.drawEllipse(0, 0, 15, 30);
-    this.sprite.endFill();
+    Assets.load("player_spritesheet.json").then((sheet) => {
+      this.sprite = new PlayerSprite(sheet);
+    });
 
     this.movement = new PlayerMovement(engine.physicsEngine, 100, 100);
   }
 
   addTo(container: Container, index = 0) {
-    container.addChildAt(this.sprite, index);
+    this.sprite?.addTo(container, index);
   }
 
   update(input: { left: boolean; right: boolean; jump: boolean }) {
@@ -28,7 +28,12 @@ export class Player {
   }
 
   syncWithPhysics() {
-    this.sprite.x = this.body.position.x;
-    this.sprite.y = this.body.position.y;
+    this.sprite?.update(
+      this.body.position.x,
+      this.body.position.y,
+      this.body.velocity.x,
+      this.body.velocity.y,
+      this.movement.isOnGround()
+    );
   }
 }

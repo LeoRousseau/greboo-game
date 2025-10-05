@@ -10,6 +10,7 @@ export class Camera {
   ) {}
 
   update() {
+    if (!this.player.sprite) return;
     this.container.x = -this.player.sprite.x + window.innerWidth / 2;
     let targetY = -this.player.sprite.y + window.innerHeight / 2;
 
