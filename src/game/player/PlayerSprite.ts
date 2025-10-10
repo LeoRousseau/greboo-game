@@ -44,7 +44,7 @@ export class PlayerSprite {
     container.addChildAt(this.sprite, index);
   }
 
-  public update(x: number, y: number, dx: number, dy: number, onGround: boolean) {
+  public update(x: number, y: number, dx: number, _dy: number, onGround: boolean) {
     this.sprite.x = x;
     this.sprite.y = y;
 
