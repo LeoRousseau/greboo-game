@@ -1,4 +1,4 @@
-import { Assets, Container, Spritesheet } from "pixi.js";
+import { Assets, Container } from "pixi.js";
 import type { Engine } from "../engine/Engine";
 import { PlayerMovement } from "./playerMovement";
 import { PlayerSprite } from "./PlayerSprite";
@@ -6,6 +6,8 @@ import { PlayerSprite } from "./PlayerSprite";
 export class Player {
   sprite?: PlayerSprite;
   readonly movement: PlayerMovement;
+
+  inventory: Record<string, number> = {};
 
   get body() {
     return this.movement.body;
@@ -16,7 +18,14 @@ export class Player {
       this.sprite = new PlayerSprite(sheet);
     });
 
-    this.movement = new PlayerMovement(engine.physicsEngine, 100, 100);
+    this.movement = new PlayerMovement(
+      engine.physicsEngine,
+      (id: string) => {
+        this._addToInventory(id);
+      },
+      100,
+      100
+    );
   }
 
   addTo(container: Container, index = 0) {
@@ -35,5 +44,15 @@ export class Player {
       this.body.velocity.y,
       this.movement.isOnGround()
     );
+  }
+
+  private _addToInventory(id: string) {
+    if (id in this.inventory) {
+      this.inventory[id] = this.inventory[id] + 1;
+    } else {
+      this.inventory[id] = 1;
+    }
+
+    console.log(this.inventory);
   }
 }

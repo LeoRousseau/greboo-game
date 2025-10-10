@@ -3,7 +3,6 @@ import Matter from "matter-js";
 export class PlayerMovement {
   readonly body: Matter.Body;
   readonly footSensor: Matter.Body;
-  readonly engine: Matter.Engine;
 
   private contacts = new Set<Matter.Body>(); // foot contacts
 
@@ -12,9 +11,12 @@ export class PlayerMovement {
   defaultSpeed = 2;
   jumpSpeed = 10;
 
-  constructor(engine: Matter.Engine, x: number, y: number) {
-    this.engine = engine;
-
+  constructor(
+    readonly engine: Matter.Engine,
+    readonly onCollect: (key: string) => void,
+    x: number,
+    y: number
+  ) {
     const body = Matter.Bodies.rectangle(x, y, 25, 60, {
       restitution: 0,
       friction: 0.1,
@@ -44,6 +46,14 @@ export class PlayerMovement {
         if (this.collideWithEnemy(pair)) {
           console.log("DEATH");
         }
+
+        if (this.collideWithCollectable(pair)) {
+          const other = this.otherBody(pair);
+          if ("collect" in other) {
+            const key = (other as any).collect() as string;
+            this.onCollect(key);
+          }
+        }
       });
     });
 
@@ -62,12 +72,19 @@ export class PlayerMovement {
   }
 
   private otherBody(pair: Matter.Pair) {
-    return pair.bodyA === this.footSensor ? pair.bodyB : pair.bodyA;
+    return pair.bodyA === this.footSensor || pair.bodyA === this.body ? pair.bodyB : pair.bodyA;
   }
 
   private collideWithEnemy(pair: Matter.Pair) {
     return (
       (pair.bodyA.label === "enemy" || pair.bodyB.label === "enemy") &&
+      (pair.bodyA.label === "player" || pair.bodyB.label === "player")
+    );
+  }
+
+  private collideWithCollectable(pair: Matter.Pair) {
+    return (
+      (pair.bodyA.label === "collectable" || pair.bodyB.label === "collectable") &&
       (pair.bodyA.label === "player" || pair.bodyB.label === "player")
     );
   }

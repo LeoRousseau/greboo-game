@@ -52,8 +52,11 @@ export class Level {
       this.enemies.push(en1);
       en1.addTo(this.content, this.content.children.length);
 
-      const pinecones = new Collectable({ x: 1600, y: 1300 });
+      const pinecones = new Collectable(this.engine, "pinecone", { x: 1600, y: 1300 }, "pinecone_spritesheet.json");
       pinecones.addTo(this.content, this.content.children.length);
+
+      const pinecone2 = new Collectable(this.engine, "pinecone", { x: 1400, y: 1300 }, "pinecone_spritesheet.json");
+      pinecone2.addTo(this.content, this.content.children.length);
     });
   }
 
