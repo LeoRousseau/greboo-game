@@ -43,7 +43,7 @@ export class PlayerMovement {
           this.contacts.add(other);
         }
 
-        if (this.collideWithEnemy(pair)) {
+        if (this.collideWithEnemy(pair) || this.collideWithProjectile(pair)) {
           console.log("DEATH");
         }
 
@@ -78,6 +78,13 @@ export class PlayerMovement {
   private collideWithEnemy(pair: Matter.Pair) {
     return (
       (pair.bodyA.label === "enemy" || pair.bodyB.label === "enemy") &&
+      (pair.bodyA.label === "player" || pair.bodyB.label === "player")
+    );
+  }
+
+  private collideWithProjectile(pair: Matter.Pair) {
+    return (
+      (pair.bodyA.label === "projectile" || pair.bodyB.label === "projectile") &&
       (pair.bodyA.label === "player" || pair.bodyB.label === "player")
     );
   }

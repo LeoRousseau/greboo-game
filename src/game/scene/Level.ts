@@ -1,4 +1,4 @@
-import { Container } from "pixi.js";
+import { Container, Ticker } from "pixi.js";
 import { Camera } from "../player/camera";
 import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
@@ -10,6 +10,7 @@ import { Underground } from "./Underground";
 import { HorizontalParallax } from "./HorizontalParallax";
 import { DefaultEnemy } from "../enemy/DefaultEnemy";
 import { Collectable } from "../collectable/Collectable";
+import { Spawner } from "../spawner/Spawner";
 
 export class Level {
   collisionData: Shape[] = [];
@@ -23,6 +24,7 @@ export class Level {
   hParallax: HorizontalParallax;
 
   enemies: DefaultEnemy[] = [];
+  spawners: Spawner[] = [];
 
   constructor(
     readonly engine: Engine,
@@ -57,6 +59,14 @@ export class Level {
 
       const pinecone2 = new Collectable(this.engine, "pinecone", { x: 1400, y: 1300 }, "pinecone_spritesheet.json");
       pinecone2.addTo(this.content, this.content.children.length);
+
+      const spawner1 = new Spawner(
+        this.engine,
+        this.content,
+        { x: 1600, y: 600 },
+        { rate: 100, spriteUrl: "rect.jpg", velocity: { x: 0, y: 0.35 } }
+      );
+      this.spawners.push(spawner1);
     });
   }
 
@@ -64,8 +74,7 @@ export class Level {
     await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1100 } });
     await this.hParallax.init([
       { src: "sky.jpg", factorX: 0.2, y: 512 },
-      { src: "bg_trees1.png", factorX: 0.9, y: 512 },
-      { src: "bg_bush.png", factorX: 1, y: 512 },
+      { src: "bg_trees1.png", factorX: 0.9, y: 850 },
     ]);
 
     const data = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
@@ -136,7 +145,7 @@ export class Level {
     });
   }
 
-  update() {
+  update(ticker: Ticker) {
     this.player.update({
       left: this.input.isDown("ArrowLeft") || this.input.isDown("KeyA"),
       right: this.input.isDown("ArrowRight") || this.input.isDown("KeyD"),
@@ -147,6 +156,7 @@ export class Level {
     this.underground.update();
     this.hParallax.update();
     this.enemies.forEach((e) => e.update());
+    this.spawners.forEach((s) => s.update(ticker));
   }
 
   syncWithPhysics() {

@@ -15,8 +15,8 @@ export class Game {
   }
 
   loadLevel() {
-    this.engine.application.ticker.add(() => {
-      this.currentLevel.update();
+    this.engine.application.ticker.add((ticker) => {
+      this.currentLevel.update(ticker);
 
       Matter.Engine.update(this.engine.physicsEngine, 1000 / 60);
       this.currentLevel.syncWithPhysics();
