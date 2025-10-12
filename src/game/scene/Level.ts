@@ -57,16 +57,23 @@ export class Level {
       const pinecones = new Collectable(this.engine, "pinecone", { x: 1600, y: 1300 }, "pinecone_spritesheet.json");
       pinecones.addTo(this.content, this.content.children.length);
 
-      const pinecone2 = new Collectable(this.engine, "pinecone", { x: 1400, y: 1300 }, "pinecone_spritesheet.json");
+      const pinecone2 = new Collectable(this.engine, "pinecone", { x: 1300, y: 1300 }, "pinecone_spritesheet.json");
       pinecone2.addTo(this.content, this.content.children.length);
 
       const spawner1 = new Spawner(
         this.engine,
         this.content,
         { x: 1600, y: 600 },
-        { rate: 100, spriteUrl: "rect.jpg", velocity: { x: 0, y: 0.35 } }
+        { rate: 150, spriteUrl: "arrow.png", velocity: { x: 0, y: 0.5 } }
       );
       this.spawners.push(spawner1);
+      const spawner2 = new Spawner(
+        this.engine,
+        this.content,
+        { x: 2420, y: 720 },
+        { rate: 180, spriteUrl: "arrow.png", velocity: { x: 0, y: 0.6 } }
+      );
+      this.spawners.push(spawner2);
     });
   }
 
