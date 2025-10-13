@@ -17,14 +17,14 @@ export class PlayerMovement {
     x: number,
     y: number
   ) {
-    const body = Matter.Bodies.rectangle(x, y, 25, 60, {
+    const body = Matter.Bodies.rectangle(x, y, 25, 68, {
       restitution: 0,
       friction: 0.1,
       inertia: Infinity, // disable rotation,
       label: "player",
     });
 
-    this.footSensor = Matter.Bodies.rectangle(x, y + 30, 20, 8, {
+    this.footSensor = Matter.Bodies.rectangle(x, y + 35, 20, 8, {
       isSensor: true,
       isStatic: false,
       label: "player",
