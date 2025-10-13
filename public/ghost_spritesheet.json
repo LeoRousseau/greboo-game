@@ -1,0 +1,18 @@
+{
+  "frames": {
+    "walk_0": { "frame": { "x": 0, "y": 0, "w": 64, "h": 64 } },
+    "walk_1": { "frame": { "x": 64, "y": 0, "w": 64, "h": 64 } },
+    "walk_2": { "frame": { "x": 128, "y": 0, "w": 64, "h": 64 } },
+    "walk_3": { "frame": { "x": 192, "y": 0, "w": 64, "h": 64 } },
+    "walk_4": { "frame": { "x": 256, "y": 0, "w": 64, "h": 64 } },
+    "walk_5": { "frame": { "x": 320, "y": 0, "w": 64, "h": 64 } }
+  },
+  "meta": {
+    "image": "ghost_spritesheet.png",
+    "size": { "w": 384, "h": 64 },
+    "scale": "1"
+  },
+  "animations": {
+    "walk": ["walk_0", "walk_1", "walk_2", "walk_3", "walk_4", "walk_5"]
+  }
+}
