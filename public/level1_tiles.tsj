@@ -26,6 +26,15 @@
                  "type":"bool",
                  "value":true
                 }]
+        }, 
+        {
+         "id":23,
+         "properties":[
+                {
+                 "name":"customCollisionID",
+                 "type":"int",
+                 "value":0
+                }]
         }],
  "tilewidth":64,
  "type":"tileset",

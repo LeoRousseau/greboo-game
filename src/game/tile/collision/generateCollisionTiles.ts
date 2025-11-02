@@ -8,6 +8,7 @@ import {
   type TiledTileLayer,
   type TiledTileset,
 } from "../../tile/Tiled";
+import { customCollisions } from "./customCollisions";
 import type { Shape } from "./Shape";
 
 export function generateCollisionTiles(collisionLayer: TiledTileLayer, map: TiledMap, tileSet: TiledTileset): Shape[] {
@@ -33,8 +34,17 @@ export function generateCollisionTiles(collisionLayer: TiledTileLayer, map: Tile
       const tileId = getTileIndexFromRawGID(rawGid, map.tilesets[0].firstgid);
       const tile = tileSet.tiles.find((t) => t.id === tileId);
       const isTriangle = tile && getCustomProperty<Boolean>(tile, "isTriangle");
+      const customCollisionID = tile && getCustomProperty<number>(tile, "customCollisionID");
 
-      if (isTriangle) {
+      if (customCollisionID !== undefined) {
+        const c = customCollisions[customCollisionID]; // custom collisions are rectangle and can't be oriented
+        result.push({
+          x: col * tilewidth + c.x,
+          y: row * tileheight + c.y,
+          w: c.w,
+          h: c.h,
+        });
+      } else if (isTriangle) {
         const flippedH = (rawGid & FLIPPED_HORIZONTALLY_FLAG) !== 0;
         const flippedV = (rawGid & FLIPPED_VERTICALLY_FLAG) !== 0;
         const flippedD = (rawGid & FLIPPED_DIAGONALLY_FLAG) !== 0;
