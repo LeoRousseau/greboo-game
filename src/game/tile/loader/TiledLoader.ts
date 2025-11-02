@@ -11,14 +11,19 @@ import {
 } from "../Tiled";
 import type { Shape } from "../collision/Shape";
 import { generateCollisionTiles } from "../collision/generateCollisionTiles";
+import type { TrapPosition } from "../../trap/TrapPosition";
 
 export class TiledLoader {
   constructor(private parent: Container) {}
 
-  async loadMap(mapUrl: string, tilesetImageUrl: string): Promise<{ layers: Container[]; collisions: Shape[] }> {
+  async loadMap(
+    mapUrl: string,
+    tilesetImageUrl: string
+  ): Promise<{ layers: Container[]; collisions: Shape[]; traps: TrapPosition[] }> {
     const map: TiledMap = await (await fetch(mapUrl)).json();
     const tileset: TiledTileset = await (await fetch(map.tilesets[0].source)).json();
     const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);
+    const traps: TrapPosition[] = [];
 
     const { tilewidth, tileheight, layers, width, height } = map;
     const tilesPerLine = tileset.imagewidth / tileset.tilewidth;
@@ -53,6 +58,9 @@ export class TiledLoader {
           const flippedD = (rawGid & FLIPPED_DIAGONALLY_FLAG) !== 0;
 
           const tileIndex = getTileIndexFromRawGID(rawGid, map.tilesets[0].firstgid);
+          const _tile = tileset.tiles.find((t) => t.id === tileIndex);
+          const isTrap = _tile && getCustomProperty<Boolean>(_tile, "isTrap");
+
           const texture = textures[tileIndex];
           if (!texture) continue;
 
@@ -65,6 +73,10 @@ export class TiledLoader {
           tile.x = col * tilewidth + tilewidth / 2;
           tile.y = row * tileheight + tileheight / 2;
 
+          if (isTrap) {
+            traps.push({ x: tile.x, y: tile.y + tileheight / 2 - 5 });
+          }
+
           applyTiledFlags(tile, flippedH, flippedV, flippedD);
 
           layerContainer.addChild(tile);
@@ -76,7 +88,7 @@ export class TiledLoader {
 
     const collisionLayer = layers.find((l) => getCustomProperty<boolean>(l, "collide"));
     const collisionData = collisionLayer ? generateCollisionTiles(collisionLayer as TiledTileLayer, map, tileset) : [];
-    return { layers: layerContainers, collisions: collisionData };
+    return { layers: layerContainers, collisions: collisionData, traps };
   }
 }
 

@@ -10,6 +10,15 @@
  "tileheight":64,
  "tiles":[
         {
+         "id":2,
+         "properties":[
+                {
+                 "name":"isTrap",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
          "id":19,
          "properties":[
                 {

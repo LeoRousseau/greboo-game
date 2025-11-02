@@ -1,8 +1,8 @@
 export const customCollisions = [
   {
     x: 0, // metal
-    y: 34,
+    y: 36,
     w: 64,
-    h: 20,
+    h: 18,
   },
 ];

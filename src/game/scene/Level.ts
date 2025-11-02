@@ -4,16 +4,16 @@ import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
 import { TiledLoader } from "../tile/loader/TiledLoader";
 import type { Shape } from "../tile/collision/Shape";
-import Matter from "matter-js";
 import type { Engine } from "../engine/Engine";
 import { Underground } from "./Underground";
 import { HorizontalParallax } from "./HorizontalParallax";
 import { DefaultEnemy } from "../enemy/DefaultEnemy";
 import { Collectable } from "../collectable/Collectable";
 import { Spawner } from "../spawner/Spawner";
+import { generateBodiesFromTileData } from "./generateBodieFromTileData";
+import { generateTrapsFromTileData } from "../trap/generateTrapsFromTileData";
 
 export class Level {
-  collisionData: Shape[] = [];
   camera: Camera;
   input: InputManager;
 
@@ -85,71 +85,8 @@ export class Level {
     ]);
 
     const data = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
-    this.collisionData = data.collisions;
-
-    data.collisions.forEach((col) => {
-      if ("orientation" in col) {
-        const { x, y, w, h, orientation } = col;
-        let cx = x + w / 2;
-        let cy = y + h / 2;
-
-        let vertices;
-        switch (orientation) {
-          case "tl":
-            vertices = [
-              { x: -w / 2, y: -h / 2 }, // top-left
-              { x: w / 2, y: -h / 2 }, // top-right
-              { x: -w / 2, y: h / 2 }, // bottom-left
-            ];
-            break;
-          case "tr":
-            vertices = [
-              { x: -w / 2, y: -h / 2 }, // top-left
-              { x: w / 2, y: -h / 2 }, // top-right
-              { x: w / 2, y: h / 2 }, // bottom-right
-            ];
-            break;
-          case "bl":
-            vertices = [
-              { x: -w / 2, y: h / 2 }, // bottom-left
-              { x: -w / 2, y: -h / 2 }, // top-left
-              { x: w / 2, y: h / 2 }, // bottom-right
-            ];
-            break;
-          case "br":
-            vertices = [
-              { x: w / 2, y: h / 2 }, // bottom-right
-              { x: w / 2, y: -h / 2 }, // top-right
-              { x: -w / 2, y: h / 2 }, // bottom-left
-            ];
-            break;
-        }
-
-        const body = Matter.Bodies.fromVertices(
-          cx,
-          cy,
-          [vertices!],
-          {
-            isStatic: true,
-            friction: 0.01,
-          },
-          true
-        );
-
-        Matter.World.add(this.engine.physicsWorld, body);
-
-        // Fix triangle offset due to center of mass
-        const dx = x + w / 2 - (body.bounds.min.x + (body.bounds.max.x - body.bounds.min.x) / 2);
-        const dy = y + h / 2 - (body.bounds.min.y + (body.bounds.max.y - body.bounds.min.y) / 2);
-        Matter.Body.translate(body, { x: dx, y: dy });
-      } else {
-        const body = Matter.Bodies.rectangle(col.x + col.w / 2, col.y + col.h / 2, col.w, col.h, {
-          isStatic: true,
-          friction: 0.01,
-        });
-        Matter.World.add(this.engine.physicsWorld, body);
-      }
-    });
+    generateBodiesFromTileData(data.collisions, this.engine);
+    generateTrapsFromTileData(data.traps, this.engine);
   }
 
   update(ticker: Ticker) {

@@ -54,6 +54,10 @@ export class PlayerMovement {
             this.onCollect(key);
           }
         }
+
+        if (this.collideWithTrap(pair)) {
+          console.log("DEATH");
+        }
       });
     });
 
@@ -92,6 +96,13 @@ export class PlayerMovement {
   private collideWithCollectable(pair: Matter.Pair) {
     return (
       (pair.bodyA.label === "collectable" || pair.bodyB.label === "collectable") &&
+      (pair.bodyA.label === "player" || pair.bodyB.label === "player")
+    );
+  }
+
+  private collideWithTrap(pair: Matter.Pair) {
+    return (
+      (pair.bodyA.label === "trap" || pair.bodyB.label === "trap") &&
       (pair.bodyA.label === "player" || pair.bodyB.label === "player")
     );
   }
