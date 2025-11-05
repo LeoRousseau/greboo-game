@@ -78,13 +78,13 @@ export class Level {
   }
 
   async init() {
-    await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1100 } });
+    await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1600 } });
     await this.hParallax.init([
       { src: "sky.jpg", factorX: 0.2, y: 512 },
       { src: "bg_trees1.png", factorX: 0.9, y: 850 },
     ]);
 
-    const data = await new TiledLoader(this.content).loadMap("./level1.tmj", "./level1_tiles.png");
+    const data = await new TiledLoader(this.content).loadMap("./level1_v2.tmj", "./level1_tiles.png");
     generateBodiesFromTileData(data.collisions, this.engine);
     generateTrapsFromTileData(data.traps, this.engine);
   }
