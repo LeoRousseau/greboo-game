@@ -1,8 +1,8 @@
 import type { Engine } from "../engine/Engine";
+import type { IPoint } from "../types/IPoint";
 import { TrapEntity } from "./TrapEntity";
-import type { TrapPosition } from "./TrapPosition";
 
-export function generateTrapsFromTileData(pos: TrapPosition[], engine: Engine) {
+export function generateTrapsFromTileData(pos: IPoint[], engine: Engine) {
   pos.forEach((p) => {
     new TrapEntity(p, engine);
   });

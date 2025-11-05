@@ -11,7 +11,7 @@ import {
 } from "../Tiled";
 import type { Shape } from "../collision/Shape";
 import { generateCollisionTiles } from "../collision/generateCollisionTiles";
-import type { TrapPosition } from "../../trap/TrapPosition";
+import type { IPoint } from "../../types/IPoint";
 
 export class TiledLoader {
   constructor(private parent: Container) {}
@@ -19,11 +19,18 @@ export class TiledLoader {
   async loadMap(
     mapUrl: string,
     tilesetImageUrl: string
-  ): Promise<{ layers: Container[]; collisions: Shape[]; traps: TrapPosition[] }> {
+  ): Promise<{
+    layers: Container[];
+    collisions: Shape[];
+    traps: IPoint[];
+    enemies: [IPoint, IPoint][];
+    pinecones: IPoint[];
+    projectiles: IPoint[];
+  }> {
     const map: TiledMap = await (await fetch(mapUrl)).json();
     const tileset: TiledTileset = await (await fetch(map.tilesets[0].source)).json();
     const tilesetTexture = await Assets.load<Texture>(tilesetImageUrl);
-    const traps: TrapPosition[] = [];
+    const traps: IPoint[] = [];
 
     const { tilewidth, tileheight, layers, width, height } = map;
     const tilesPerLine = tileset.imagewidth / tileset.tilewidth;
@@ -88,7 +95,60 @@ export class TiledLoader {
 
     const collisionLayer = layers.find((l) => getCustomProperty<boolean>(l, "collide"));
     const collisionData = collisionLayer ? generateCollisionTiles(collisionLayer as TiledTileLayer, map, tileset) : [];
-    return { layers: layerContainers, collisions: collisionData, traps };
+    const objectPositions = this.extractObjectPositions(map);
+    console.log("Extracted Object Positions:", objectPositions);
+    return {
+      layers: layerContainers,
+      collisions: collisionData,
+      traps,
+      enemies: objectPositions.enemy,
+      pinecones: objectPositions.pinecone,
+      projectiles: objectPositions.projectile,
+    };
+  }
+
+  private extractObjectPositions(mapData: TiledMap): {
+    enemy: [IPoint, IPoint][];
+    projectile: IPoint[];
+    pinecone: IPoint[];
+  } {
+    const result: {
+      enemy: [IPoint, IPoint][];
+      projectile: IPoint[];
+      pinecone: IPoint[];
+    } = {
+      enemy: [],
+      projectile: [],
+      pinecone: [],
+    };
+
+    if (!mapData || !Array.isArray(mapData.layers)) return result;
+
+    for (const layer of mapData.layers) {
+      if (layer.type !== "objectgroup") continue;
+      const name = (layer.name || "").toLowerCase();
+      if (!["enemy", "projectile", "pinecone"].includes(name)) continue;
+
+      for (const obj of layer.objects || []) {
+        console.log(obj);
+        const x = typeof obj.x === "number" ? Math.round(obj.x) : 0;
+        const y = typeof obj.y === "number" ? Math.round(obj.y) : 0;
+
+        if (name === "enemy") {
+          const value = obj.properties?.find((p) => p.name === "range")?.value;
+          const range = typeof value === "number" ? Math.round(value) : 100;
+          result[name].push([
+            { x: x - range / 2, y },
+            { x: x + range / 2, y },
+          ]);
+        } else {
+          // @ts-ignore
+          result[name].push({ x, y });
+        }
+      }
+    }
+
+    return result;
   }
 }
 
