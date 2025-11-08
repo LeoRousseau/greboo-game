@@ -24,7 +24,7 @@ export class DebugController {
   }
 
   displayCollision(value: boolean) {
-    if (value) drawCollisionDebug(this.debugContainer, this.game.currentLevel.collisionData);
+    if (value) drawCollisionDebug(this.debugContainer, this.game.currentLevel.data!.collisions);
     else this.debugContainer.removeChildren();
   }
 

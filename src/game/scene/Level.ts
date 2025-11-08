@@ -11,6 +11,7 @@ import { Collectable } from "../collectable/Collectable";
 import { Spawner } from "../spawner/Spawner";
 import { generateBodiesFromTileData } from "./generateBodieFromTileData";
 import { generateTrapsFromTileData } from "../trap/generateTrapsFromTileData";
+import type { TiledMapData } from "../tile/loader/TiledMapData";
 
 export class Level {
   camera: Camera;
@@ -24,6 +25,8 @@ export class Level {
 
   enemies: DefaultEnemy[] = [];
   spawners: Spawner[] = [];
+
+  data?: TiledMapData;
 
   constructor(
     readonly engine: Engine,
@@ -56,6 +59,7 @@ export class Level {
     ]);
 
     const data = await new TiledLoader(this.content).loadMap("./level1_v2.tmj", "./level1_tiles.png");
+    this.data = data;
     generateBodiesFromTileData(data.collisions, this.engine);
     generateTrapsFromTileData(data.traps, this.engine);
     data.enemies.forEach((pos) => {
