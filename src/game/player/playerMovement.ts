@@ -14,6 +14,7 @@ export class PlayerMovement {
   constructor(
     readonly engine: Matter.Engine,
     readonly onCollect: (key: string) => void,
+    readonly onDeath: () => void,
     x: number,
     y: number
   ) {
@@ -44,7 +45,7 @@ export class PlayerMovement {
         }
 
         if (this.collideWithEnemy(pair) || this.collideWithProjectile(pair)) {
-          console.log("DEATH");
+          this.onDeath();
         }
 
         if (this.collideWithCollectable(pair)) {
@@ -56,7 +57,7 @@ export class PlayerMovement {
         }
 
         if (this.collideWithTrap(pair)) {
-          console.log("DEATH");
+          this.onDeath();
         }
       });
     });

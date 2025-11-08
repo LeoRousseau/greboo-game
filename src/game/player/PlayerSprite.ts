@@ -1,13 +1,13 @@
 import * as PIXI from "pixi.js";
 
-export type PlayerState = "idle" | "run";
+export type PlayerState = "idle" | "run" | "death";
 
 export class PlayerSprite {
   public sprite: PIXI.AnimatedSprite;
   private animations: Record<PlayerState, PIXI.Texture[]>;
   // Animation state stabilisation
-  private currentState: "idle" | "run" = "idle";
-  private lastDetectedState: "idle" | "run" = "idle";
+  private currentState: PlayerState = "idle";
+  private lastDetectedState: PlayerState = "idle";
   private stableStateFrameCount = 0;
   private stateStabilityThreshold = 2;
 
@@ -28,6 +28,7 @@ export class PlayerSprite {
     this.animations = {
       idle: sheet.animations["idle"],
       run: sheet.animations["run"],
+      death: sheet.animations["death"],
     };
 
     // Sprite initial
@@ -42,7 +43,18 @@ export class PlayerSprite {
     container.addChildAt(this.sprite, index);
   }
 
-  public update(x: number, y: number, dx: number, _dy: number, onGround: boolean) {
+  public update(x: number, y: number, dx: number, _dy: number, onGround: boolean, isDead: boolean) {
+    if (isDead) {
+      if (this.currentState !== "death") {
+        this.currentState = "death";
+        this.sprite.textures = this.animations.death;
+        this.sprite.loop = false;
+        this.sprite.animationSpeed = 0.2;
+        this.sprite.play();
+      }
+      return;
+    }
+
     this.sprite.x = x;
     this.sprite.y = y;
 
@@ -64,7 +76,7 @@ export class PlayerSprite {
       }
     }
 
-    let detectedState: "idle" | "run" = "idle";
+    let detectedState: PlayerState = "idle";
     if (!onGround) {
       detectedState = "run"; // "jump" deactivated
     } else if (Math.abs(dx) > 0.1) {

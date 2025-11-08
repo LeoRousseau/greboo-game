@@ -9,6 +9,8 @@ export class Player {
 
   inventory: Record<string, number> = {};
 
+  isDead = false;
+
   get body() {
     return this.movement.body;
   }
@@ -22,6 +24,9 @@ export class Player {
       engine.physicsEngine,
       (id: string) => {
         this._addToInventory(id);
+      },
+      () => {
+        this.isDead = true;
       },
       100,
       100
@@ -42,7 +47,8 @@ export class Player {
       this.body.position.y,
       this.body.velocity.x,
       this.body.velocity.y,
-      this.movement.isOnGround()
+      this.movement.isOnGround(),
+      this.isDead
     );
   }
 
