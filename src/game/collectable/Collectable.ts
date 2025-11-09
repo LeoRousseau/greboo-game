@@ -26,7 +26,7 @@ export class Collectable {
         this._container.addChildAt(this.sprite, this._index);
       }
 
-      this.body = Matter.Bodies.rectangle(pos.x, pos.y, 20, 20, {
+      this.body = Matter.Bodies.rectangle(pos.x, pos.y, 25, 35, {
         isSensor: true,
         isStatic: true,
         label: "collectable",
