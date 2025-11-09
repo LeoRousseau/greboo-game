@@ -12,7 +12,7 @@ export class Game {
   constructor(readonly engine: Engine) {
     this.player = new Player(engine);
     Matter.World.addBody(this.engine.physicsWorld, this.player.body);
-    this.currentLevel = new Level(engine, engine.world, this.player);
+    this.currentLevel = new Level(engine, this.player);
     this.scoreboard = new Scoreboard(engine.application);
     this.loadLevel();
   }

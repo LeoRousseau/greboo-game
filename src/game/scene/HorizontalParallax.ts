@@ -17,11 +17,12 @@ export class HorizontalParallax {
 
   constructor(
     private app: Application,
-    private world: Container,
+    private staticWorld: Container,
+    private movingWorld: Container,
     private invertY = false
   ) {
     this.root.sortableChildren = true;
-    this.app.stage.addChildAt(this.root, 0);
+    this.staticWorld.addChildAt(this.root, 0);
     window.addEventListener("resize", this.handleResize);
   }
 
@@ -29,8 +30,7 @@ export class HorizontalParallax {
     for (const cfg of config) {
       const tex = (await Assets.load(cfg.src)) as Texture;
 
-      // hauteur = hauteur de la texture (pas de répétition verticale)
-      const spr = new TilingSprite(tex, this.app.screen.width, tex.height);
+      const spr = new TilingSprite(tex, this.app.screen.width * 10, tex.height);
       spr.zIndex = cfg.depth ?? 0;
 
       this.root.addChild(spr);
@@ -40,8 +40,8 @@ export class HorizontalParallax {
   }
 
   update() {
-    const camX = this.world.x;
-    const camY = this.invertY ? -this.world.y : this.world.y;
+    const camX = this.movingWorld.x;
+    const camY = this.invertY ? -this.movingWorld.y : this.movingWorld.y;
 
     for (const { cfg, sprite } of this.layers) {
       // scroll horizontal

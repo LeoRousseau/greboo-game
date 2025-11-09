@@ -17,7 +17,6 @@ export class Level {
   camera: Camera;
   input: InputManager;
 
-  bgContainer: Container;
   content: Container;
 
   underground: Underground;
@@ -30,19 +29,15 @@ export class Level {
 
   constructor(
     readonly engine: Engine,
-    readonly world: Container,
     readonly player: Player
   ) {
-    this.bgContainer = new Container();
-    this.world.addChild(this.bgContainer);
-
-    this.underground = new Underground(engine.application, this.world, { invertY: true });
-    this.hParallax = new HorizontalParallax(engine.application, this.world, true);
+    this.underground = new Underground(engine.application, engine.staticWorld, engine.movingWorld, { invertY: true });
+    this.hParallax = new HorizontalParallax(engine.application, engine.staticWorld, engine.movingWorld, true);
 
     this.content = new Container();
-    this.world.addChild(this.content);
+    engine.movingWorld.addChild(this.content);
 
-    this.camera = new Camera(this.player, this.world);
+    this.camera = new Camera(this.player, this.engine.movingWorld, { x: engine.renderWidth, y: engine.renderHeight });
     this.input = new InputManager();
 
     this.init().then(() => {
@@ -52,7 +47,7 @@ export class Level {
   }
 
   async init() {
-    await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1600 } });
+    await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1650 } });
     await this.hParallax.init([
       { src: "sky.jpg", factorX: 0.2, y: 640 },
       { src: "bg_trees1.png", factorX: 0.9, y: 1430 },

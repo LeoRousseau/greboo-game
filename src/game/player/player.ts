@@ -58,7 +58,5 @@ export class Player {
     } else {
       this.inventory[id] = 1;
     }
-
-    console.log(this.inventory);
   }
 }

@@ -18,12 +18,13 @@ export class Underground {
 
   constructor(
     private app: Application,
-    private world: Container,
+    private staticWorld: Container,
+    private movingWorld: Container,
     options?: { invertY?: boolean } // <--- ici tu choisis la convention Y
   ) {
     this.invertY = !!options?.invertY;
-    this.app.stage.sortableChildren = true;
-    this.app.stage.addChildAt(this.root, 0);
+    this.staticWorld.sortableChildren = true;
+    this.staticWorld.addChildAt(this.root, 0);
     window.addEventListener("resize", this.handleResize);
   }
 
@@ -48,8 +49,8 @@ export class Underground {
   }
 
   update() {
-    const camX_raw = this.world.x;
-    const camY_raw = this.world.y;
+    const camX_raw = this.movingWorld.x;
+    const camY_raw = this.movingWorld.y;
 
     const camX = camX_raw;
     const camY = this.invertY ? -camY_raw : camY_raw;
