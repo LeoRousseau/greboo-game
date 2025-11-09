@@ -10,8 +10,8 @@ export class Engine {
   readonly movingWorld: Container;
   readonly staticWorld: Container;
 
-  readonly renderWidth = 1200;
-  readonly renderHeight = 600;
+  readonly renderWidth = 800;
+  readonly renderHeight = 400;
 
   renderTexture!: RenderTexture;
   renderSprite!: Sprite;
@@ -49,6 +49,7 @@ export class Engine {
     // RenderTexture logique
     this.renderTexture = RenderTexture.create({ width: this.renderWidth, height: this.renderHeight });
     this.renderSprite = Sprite.from(this.renderTexture);
+    this.renderTexture.source.scaleMode = "nearest";
     this.application.stage.addChild(this.renderSprite);
 
     // const game_window = document.getElementById("game_window");
@@ -103,6 +104,7 @@ export class Engine {
       } while (data.scale < 10);
     }
 
+    console.log;
     const game_window = document.getElementsByClassName("pixi-container")[0] as HTMLElement;
     game_window.style.width = data.physical_width + "px";
     game_window.style.height = data.physical_height + "px";
