@@ -16,6 +16,8 @@ export class Engine {
   renderTexture!: RenderTexture;
   renderSprite!: Sprite;
 
+  isMobile = false;
+
   get physicsWorld(): Matter.World {
     return this.physicsEngine.world;
   }
@@ -59,7 +61,8 @@ export class Engine {
     this.application.view.oncontextmenu = (event) => event.preventDefault();
 
     // Interaction
-    this.application.renderer.events.autoPreventDefault = false;
+    // this.application.renderer.events.autoPreventDefault = false;
+    this.isMobile = this.application.renderer.events.supportsTouchEvents;
 
     // Initial resize
     this.updatePhysicalSize();
@@ -71,6 +74,7 @@ export class Engine {
     const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
+    console.log("Resize detected:", width, height);
     const data = {
       scale: 1,
       physical_width: this.renderWidth,
@@ -79,21 +83,19 @@ export class Engine {
       render_height: this.renderHeight,
     };
 
-    if (false) {
-      // mobile
-      // if (width / render.render_width > height / render.render_height) {
-      //   render.physical_height = height;
-      //   render.physical_width = (render.render_width * render.physical_height) / render.render_height;
-      // } else {
-      //   render.physical_width = width;
-      //   render.physical_height = (render.render_height * render.physical_width) / render.render_width;
-      // }
-      // game.update_touchscreen_controls();
+    if (this.isMobile) {
+      if (width / data.render_width > height / data.render_height) {
+        data.physical_height = height;
+        data.physical_width = (data.render_width * data.physical_height) / data.render_height;
+      } else {
+        data.physical_width = width;
+        data.physical_height = (data.render_height * data.physical_width) / data.render_width;
+      }
     } else {
       do {
         const new_physical_width = data.render_width * (data.scale + 1);
         const new_physical_height = data.render_height * (data.scale + 1);
-        console.log(new_physical_width, new_physical_height, width, height);
+
         if (new_physical_width < width && new_physical_height < height) {
           data.physical_width = new_physical_width;
           data.physical_height = new_physical_height;
@@ -104,10 +106,11 @@ export class Engine {
       } while (data.scale < 10);
     }
 
-    console.log;
+    console.log(data, this.isMobile);
     const game_window = document.getElementsByClassName("pixi-container")[0] as HTMLElement;
     game_window.style.width = data.physical_width + "px";
     game_window.style.height = data.physical_height + "px";
+    console.log(width, data.physical_width);
     game_window.style.marginLeft = (width - data.physical_width) / 2 + "px";
     game_window.style.marginTop = (height - data.physical_height) / 2 + "px";
 
