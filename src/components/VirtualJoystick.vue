@@ -62,7 +62,6 @@ onUnmounted(() => {
   width: 200px;
   height: 200px;
   touch-action: none;
-  z-index: 100;
 }
 
 .jump-zone {
@@ -72,7 +71,6 @@ onUnmounted(() => {
   width: 200px;
   height: 200px;
   touch-action: none;
-  z-index: 100;
 }
 
 .jump-btn {

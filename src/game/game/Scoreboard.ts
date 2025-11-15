@@ -15,7 +15,7 @@ export class Scoreboard {
     const style = new PIXI.TextStyle({
       fontFamily: "Jersey 15",
       fontSize: 32,
-      fill: 0xffffff,
+      fill: 0xeeeeee,
       letterSpacing: 3,
 
       dropShadow: true,

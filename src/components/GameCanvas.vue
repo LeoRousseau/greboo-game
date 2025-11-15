@@ -84,17 +84,17 @@ onUnmounted(() => {
 
 <template>
   <div ref="container" class="pixi-container">
-    <div class="bottom-right-menu">
-      <div class="buttton" @click="toggleFullscreen">
-        <img :src="fullscreenIcon" alt="Fullscreen" />
-      </div>
-    </div>
     <VirtualJoystick
       @joystick-move="onJoystickMove"
       @joystick-end="onJoystickEnd"
       @joystick-button-pressed="onJoystickPressed"
       @joystick-button-released="onJoystickReleased"
     />
+    <div class="bottom-right-menu">
+      <div class="buttton" @click="toggleFullscreen">
+        <img :src="fullscreenIcon" alt="Fullscreen" />
+      </div>
+    </div>
   </div>
 </template>
 
