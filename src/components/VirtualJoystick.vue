@@ -42,15 +42,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="joystickZone" class="joystick-zone"></div>
-  <div class="jump-zone">
-    <button
-      class="jump-btn"
-      @touchstart.prevent="onJoystickButtonPressed"
-      @touchend.prevent="onJoystickButtonReleased"
-      @mousedown.prevent="onJoystickButtonPressed"
-      @mouseup.prevent="onJoystickButtonReleased"
-    ></button>
+  <div class="joystick-container">
+    <div ref="joystickZone" class="joystick-zone"></div>
+    <div class="jump-zone">
+      <button
+        class="jump-btn"
+        @touchstart.prevent="onJoystickButtonPressed"
+        @touchend.prevent="onJoystickButtonReleased"
+        @mousedown.prevent="onJoystickButtonPressed"
+        @mouseup.prevent="onJoystickButtonReleased"
+      ></button>
+    </div>
   </div>
 </template>
 

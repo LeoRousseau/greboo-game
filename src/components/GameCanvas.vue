@@ -85,6 +85,7 @@ onUnmounted(() => {
 <template>
   <div ref="container" class="pixi-container">
     <VirtualJoystick
+      v-if="appStore.engine"
       @joystick-move="onJoystickMove"
       @joystick-end="onJoystickEnd"
       @joystick-button-pressed="onJoystickPressed"
