@@ -1,6 +1,5 @@
 import { Container, Ticker } from "pixi.js";
 import { Camera } from "../player/camera";
-import { InputManager } from "../engine/InputManager";
 import { Player } from "../player/player";
 import { TiledLoader } from "../tile/loader/TiledLoader";
 import type { Engine } from "../engine/Engine";
@@ -15,7 +14,6 @@ import type { TiledMapData } from "../tile/loader/TiledMapData";
 
 export class Level {
   camera: Camera;
-  input: InputManager;
 
   content: Container;
 
@@ -38,7 +36,6 @@ export class Level {
     engine.movingWorld.addChild(this.content);
 
     this.camera = new Camera(this.player, this.engine.movingWorld, { x: engine.renderWidth, y: engine.renderHeight });
-    this.input = new InputManager();
 
     this.init().then(() => {
       const mid = this.content.getChildByLabel("mid");
@@ -79,10 +76,11 @@ export class Level {
   }
 
   update(ticker: Ticker) {
+    const input = this.engine.input;
     this.player.update({
-      left: this.input.isDown("ArrowLeft") || this.input.isDown("KeyA"),
-      right: this.input.isDown("ArrowRight") || this.input.isDown("KeyD"),
-      jump: this.input.onDown("Space"),
+      left: input.isDown("ArrowLeft") || input.isDown("KeyA") || input.isJoystickLeft(),
+      right: input.isDown("ArrowRight") || input.isDown("KeyD") || input.isJoystickRight(),
+      jump: input.onDown("Space") || input.onJoystickButtonPressed(),
     });
 
     this.camera.update();

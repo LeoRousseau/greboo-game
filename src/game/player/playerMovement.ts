@@ -18,7 +18,7 @@ export class PlayerMovement {
     x: number,
     y: number
   ) {
-    const body = Matter.Bodies.rectangle(x, y, 25, 68, {
+    const body = Matter.Bodies.rectangle(x, y, 25, 67, {
       restitution: 0,
       friction: 0.1,
       inertia: Infinity, // disable rotation,

@@ -1,5 +1,6 @@
 import { Application, Container, RenderTexture, Sprite } from "pixi.js";
 import Matter from "matter-js";
+import type { InputManager } from "./InputManager";
 
 export class Engine {
   readonly application: Application;
@@ -22,7 +23,10 @@ export class Engine {
     return this.physicsEngine.world;
   }
 
-  constructor(private parent: HTMLElement) {
+  constructor(
+    private parent: HTMLElement,
+    readonly input: InputManager
+  ) {
     // Création du renderer
     this.application = new Application({
       width: this.renderWidth,

@@ -4,7 +4,9 @@ import { useAppStore } from "../store/appStore";
 import { Engine } from "../game/engine/Engine";
 import { DebugController } from "../game/debug/DebugController";
 import { Game } from "../game/game/Game";
+import VirtualJoystick from "./VirtualJoystick.vue";
 import fullscreenIcon from "../assets/fullscreen_icon.svg";
+import { InputManager } from "../game/engine/InputManager";
 
 const container = ref<HTMLDivElement | null>(null);
 const appStore = useAppStore();
@@ -27,10 +29,40 @@ const toggleFullscreen = () => {
   }
 };
 
+// Exemple de callback joystick
+const onJoystickMove = ({ angle, force }: { angle: number; force: number }) => {
+  if (force < 0.2) return;
+
+  const direction = angle > Math.PI / 2 && angle < (3 * Math.PI) / 2 ? "left" : "right";
+  if (appStore.inputManager && appStore.inputManager.joystickState !== direction) {
+    appStore.inputManager.joystickState = direction;
+  }
+};
+
+const onJoystickEnd = () => {
+  console.log("Joystick ended");
+  if (appStore.inputManager) {
+    appStore.inputManager.joystickState = "neutral";
+  }
+};
+
+const onJoystickPressed = () => {
+  if (appStore.inputManager) {
+    appStore.inputManager.joystickButtonPressed = true;
+  }
+};
+
+const onJoystickReleased = () => {
+  if (appStore.inputManager) {
+    appStore.inputManager.joystickButtonPressed = false;
+  }
+};
+
 onMounted(async () => {
   if (container.value) {
-    const engine = new Engine(container.value);
-    await engine.init?.(); // si tu utilises init
+    appStore.inputManager = new InputManager();
+    const engine = new Engine(container.value, appStore.inputManager);
+    await engine.init();
     appStore.engine = engine;
 
     const game = new Game(engine);
@@ -57,6 +89,12 @@ onUnmounted(() => {
         <img :src="fullscreenIcon" alt="Fullscreen" />
       </div>
     </div>
+    <VirtualJoystick
+      @joystick-move="onJoystickMove"
+      @joystick-end="onJoystickEnd"
+      @joystick-button-pressed="onJoystickPressed"
+      @joystick-button-released="onJoystickReleased"
+    />
   </div>
 </template>
 
