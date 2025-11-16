@@ -10,6 +10,7 @@ export class Engine {
   readonly world: Container;
   readonly movingWorld: Container;
   readonly staticWorld: Container;
+  readonly overlayWorld: Container;
 
   readonly renderWidth = 800;
   readonly renderHeight = 400;
@@ -42,8 +43,10 @@ export class Engine {
     this.world = new Container();
     this.movingWorld = new Container();
     this.staticWorld = new Container();
+    this.overlayWorld = new Container();
     this.world.addChild(this.staticWorld);
     this.world.addChild(this.movingWorld);
+    this.world.addChild(this.overlayWorld);
 
     this.physicsEngine = Matter.Engine.create();
   }

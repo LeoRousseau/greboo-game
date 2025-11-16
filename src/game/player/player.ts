@@ -15,6 +15,8 @@ export class Player {
     return this.movement.body;
   }
 
+  onDeathCallback?: () => void;
+
   constructor(readonly engine: Engine) {
     Assets.load("player_spritesheet.json").then((sheet) => {
       this.sprite = new PlayerSprite(sheet);
@@ -27,6 +29,7 @@ export class Player {
       },
       () => {
         this.isDead = true;
+        this.onDeathCallback?.();
       },
       100,
       100
