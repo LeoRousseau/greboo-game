@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useAppStore } from "../store/appStore";
 import logoSvg from "../assets/logo.svg";
+import { ref, onMounted, onUnmounted } from "vue";
 
 const appStore = useAppStore();
 
 function startGame() {
+  // pause snow when starting the game
+  snowEnabled.value = false;
   appStore.state = "started";
 }
 
@@ -15,12 +18,73 @@ function openScoreboard() {
 function openCredits() {
   // appStore.state = "credits";
 }
+
+// generate 50 random snowflakes with CSS variable values
+const snowflakes = ref(
+  Array.from({ length: 50 }).map((_, i) => {
+    const size = (Math.random() * 1 + 0.2).toFixed(3) + "vw"; // 0.2vw - 1.2vw
+    const leftIni = (Math.random() * 20 - 10).toFixed(3) + "vw";
+    const leftEnd = (Math.random() * 20 - 10).toFixed(3) + "vw";
+    const left = Math.floor(Math.random() * 100) + "vw";
+    const duration = 5 + Math.floor(Math.random() * 10); // 5-14s
+    const delay = -(Math.random() * 10).toFixed(3) + "s";
+    // subtle visual randomization
+    const opacity = (0.4 + Math.random() * 0.6).toFixed(2); // 0.4 - 1.0
+    const blur = (Math.random() * 1.6).toFixed(2) + "px"; // 0 - 1.6px
+    return { id: i, size, leftIni, leftEnd, left, duration: duration + "s", delay, opacity, blur };
+  })
+);
+
+// debug log to ensure snow array is generated
+console.log("MainMenu: snowflakes generated", snowflakes.value.length);
+
+// control whether snow runs
+const snowEnabled = ref(true);
+
+// wind variable applied to container (handles mousemove)
+let containerEl: HTMLElement | null = null;
+const onMouseMove = (e: MouseEvent) => {
+  if (!containerEl) return;
+  const rect = containerEl.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const dx = (e.clientX - cx) / rect.width; // approx -0.5..0.5
+  const windVw = (dx * 8).toFixed(2) + "vw"; // -4vw..4vw
+  containerEl.style.setProperty("--wind", windVw);
+};
+
+onMounted(() => {
+  containerEl = document.querySelector(".main-menu");
+  if (containerEl) containerEl.addEventListener("mousemove", onMouseMove);
+});
+
+onUnmounted(() => {
+  if (containerEl) containerEl.removeEventListener("mousemove", onMouseMove);
+});
 </script>
 
 <template>
   <div class="main-menu">
     <div class="logo">
       <img :src="logoSvg" alt="GREBOO Logo" />
+    </div>
+
+    <!-- Snow background container (generated snowflakes) -->
+    <div class="snow-container" :class="{ paused: !snowEnabled }" aria-hidden="true">
+      <div
+        v-for="s in snowflakes"
+        :key="s.id"
+        class="snowflake"
+        :style="{
+          ['--size']: s.size,
+          ['--left-ini']: s.leftIni,
+          ['--left-end']: s.leftEnd,
+          left: s.left,
+          ['--opacity']: s.opacity,
+          ['--blur']: s.blur,
+          animationDuration: s.duration,
+          animationDelay: s.delay,
+        }"
+      ></div>
     </div>
     <div class="buttons-container">
       <button class="menu-btn" @click="startGame">Start</button>
@@ -164,5 +228,43 @@ function openCredits() {
     padding: 8px 15px;
     font-size: 12px;
   }
+}
+
+.snowflake {
+  --size: 1vw;
+  width: var(--size);
+  height: var(--size);
+  background: var(--color, #ffea00);
+  border-radius: 50%;
+  position: absolute;
+  top: -5vh;
+  /* animation params: duration/delay set inline, name/timing/count here */
+  animation-name: snowfall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  opacity: var(--opacity, 1);
+  filter: blur(var(--blur, 0));
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translate3d(calc(var(--left-ini) + var(--wind, 0vw)), 0, 0);
+  }
+  100% {
+    transform: translate3d(calc(var(--left-end) + var(--wind, 0vw)), 110vh, 0);
+  }
+}
+
+/* Individual randomization is done in JS - each snowflake element gets CSS variables set inline */
+
+/* added small blur every 6 snowflakes*/
+.snowflake:nth-child(6n) {
+  filter: blur(1px);
+}
+
+/* paused state (when game starts) */
+.snow-container.paused .snowflake {
+  animation-play-state: paused;
+  opacity: 0; /* hide when paused */
 }
 </style>

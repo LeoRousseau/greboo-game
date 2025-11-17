@@ -12,7 +12,10 @@ export class Game {
 
   deathAnimation: DeathAnimation;
 
-  constructor(readonly engine: Engine) {
+  constructor(
+    readonly engine: Engine,
+    readonly onRestart: () => void
+  ) {
     this.player = new Player(engine);
     Matter.World.addBody(this.engine.physicsWorld, this.player.body);
     this.currentLevel = new Level(engine, this.player);
@@ -21,7 +24,9 @@ export class Game {
     this.loadLevel();
 
     this.player.onDeathCallback = () => {
-      this.deathAnimation.start(() => {});
+      this.deathAnimation.start(() => {
+        onRestart();
+      });
     };
   }
 

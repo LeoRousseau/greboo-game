@@ -148,5 +148,7 @@ export class Engine {
   dispose() {
     window.removeEventListener("resize", () => this.updatePhysicalSize());
     this.application.destroy();
+    Matter.Engine.clear(this.physicsEngine);
+    Matter.World.clear(this.physicsWorld, false);
   }
 }

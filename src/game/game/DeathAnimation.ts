@@ -14,6 +14,8 @@ export class DeathAnimation {
   private _minRadius = 50;
   private _onComplete?: () => void;
 
+  private completed: () => void;
+
   constructor(
     readonly engine: Engine,
     readonly player: Player
@@ -65,6 +67,12 @@ export class DeathAnimation {
 
     this.youDiedText = new Text("YOU DIED", titleStyle);
     this.restartText = new Text("PRESS TO RESTART", subStyle);
+
+    this.completed = () => {
+      window.removeEventListener("mousedown", this.completed);
+      window.removeEventListener("touchstart", this.completed);
+      this._onComplete?.();
+    };
   }
 
   start(onComplete?: () => void) {
@@ -100,9 +108,9 @@ export class DeathAnimation {
     this.mask.circle(localPos.tx, localPos.ty, currentRadius);
     this.mask.fill();
 
-    // if (this._time > 2000) {
-    //   this._started = false;
-    //   if (this._onComplete) this._onComplete();
-    // }
+    if (this._time > 2000) {
+      window.addEventListener("mousedown", this.completed);
+      window.addEventListener("touchstart", this.completed);
+    }
   }
 }

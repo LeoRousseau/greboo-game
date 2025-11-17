@@ -65,7 +65,7 @@ onMounted(async () => {
     await engine.init();
     appStore.engine = engine;
 
-    const game = new Game(engine);
+    const game = new Game(engine, () => (appStore.state = "none"));
     game.start();
 
     setTimeout(() => {
