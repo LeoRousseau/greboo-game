@@ -49,10 +49,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="isMobile" class="joystick-container">
+  <div class="joystick-container">
     <div ref="joystickZone" class="joystick-zone"></div>
     <div class="jump-zone">
       <button
+        v-if="isMobile"
         class="jump-btn"
         @touchstart.prevent="onJoystickButtonPressed"
         @touchend.prevent="onJoystickButtonReleased"
