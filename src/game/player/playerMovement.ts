@@ -18,25 +18,55 @@ export class PlayerMovement {
     x: number,
     y: number
   ) {
-    const body = Matter.Bodies.rectangle(x, y, 25, 67, {
+    // Torso (no friction so it won't stick to walls)
+    const torso = Matter.Bodies.rectangle(x, y, 22, 64, {
       restitution: 0,
-      friction: 0.1,
-      inertia: Infinity, // disable rotation,
-      label: "player",
+      friction: 0,
+      frictionAir: 0,
+      frictionStatic: 0,
+      inertia: Infinity, // disable rotation
+      label: "player-torso",
     });
 
-    this.footSensor = Matter.Bodies.rectangle(x, y + 35, 20, 8, {
+    // Physical foot part with friction to interact with ground
+    const foot = Matter.Bodies.rectangle(x, y + 21, 12, 40, {
+      isSensor: false,
+      restitution: 0,
+      friction: 0.6,
+      frictionStatic: 0.6,
+      frictionAir: 0,
+      label: "player-foot",
+    });
+
+    // Small foot sensor used only for reliable ground detection
+    this.footSensor = Matter.Bodies.rectangle(x, y + 21, 20, 40, {
       isSensor: true,
       isStatic: false,
+      label: "player-foot-sensor",
+    });
+
+    // Compose the player from torso + physical foot + sensor
+    this.body = Matter.Body.create({
+      parts: [torso, foot, this.footSensor],
       label: "player",
     });
 
-    this.body = Matter.Body.create({
-      parts: [body, this.footSensor],
-    });
+    // Ensure parts have the intended friction values (safety)
+    try {
+      this.body.parts?.forEach((p: any) => {
+        if (p.label === "player-foot") {
+          p.friction = 0.6;
+          p.frictionStatic = 0.6;
+          p.frictionAir = 0;
+        } else {
+          p.friction = 0;
+          p.frictionStatic = 0;
+          p.frictionAir = 0;
+        }
+      });
+    } catch {}
 
-    Matter.Body.setCentre(this.body, { x: 100, y: 100 });
-
+    // NOTE: removed forced center offset to keep parts at their created positions
     Matter.Events.on(this.engine, "collisionStart", (event) => {
       event.pairs.forEach((pair) => {
         if (this.areFootInPair(pair)) {
@@ -50,7 +80,7 @@ export class PlayerMovement {
 
         if (this.collideWithCollectable(pair)) {
           const other = this.otherBody(pair);
-          if ("collect" in other) {
+          if (other && "collect" in other) {
             const key = (other as any).collect() as string;
             this.onCollect(key);
           }
@@ -83,28 +113,28 @@ export class PlayerMovement {
   private collideWithEnemy(pair: Matter.Pair) {
     return (
       (pair.bodyA.label === "enemy" || pair.bodyB.label === "enemy") &&
-      (pair.bodyA.label === "player" || pair.bodyB.label === "player")
+      (pair.bodyA.label.includes("player") || pair.bodyB.label.includes("player"))
     );
   }
 
   private collideWithProjectile(pair: Matter.Pair) {
     return (
       (pair.bodyA.label === "projectile" || pair.bodyB.label === "projectile") &&
-      (pair.bodyA.label === "player" || pair.bodyB.label === "player")
+      (pair.bodyA.label.includes("player") || pair.bodyB.label.includes("player"))
     );
   }
 
   private collideWithCollectable(pair: Matter.Pair) {
     return (
       (pair.bodyA.label === "collectable" || pair.bodyB.label === "collectable") &&
-      (pair.bodyA.label === "player" || pair.bodyB.label === "player")
+      (pair.bodyA.label.includes("player") || pair.bodyB.label.includes("player"))
     );
   }
 
   private collideWithTrap(pair: Matter.Pair) {
     return (
       (pair.bodyA.label === "trap" || pair.bodyB.label === "trap") &&
-      (pair.bodyA.label === "player" || pair.bodyB.label === "player")
+      (pair.bodyA.label.includes("player") || pair.bodyB.label.includes("player"))
     );
   }
 
@@ -115,6 +145,11 @@ export class PlayerMovement {
   update(input: { left: boolean; right: boolean; jump: boolean }) {
     if (input.left) Matter.Body.setVelocity(this.body, { x: -this.defaultSpeed, y: this.body.velocity.y });
     if (input.right) Matter.Body.setVelocity(this.body, { x: this.defaultSpeed, y: this.body.velocity.y });
+
+    // If no horizontal input and player is on ground, stop horizontal movement to emulate friction
+    if (!input.left && !input.right && this.isOnGround()) {
+      Matter.Body.setVelocity(this.body, { x: 0, y: this.body.velocity.y });
+    }
 
     if (input.jump) {
       console.log("Jump requested", this.isOnGround(), this.canDoubleJump);

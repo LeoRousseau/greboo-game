@@ -108,7 +108,7 @@ export class DeathAnimation {
     this.mask.circle(localPos.tx, localPos.ty, currentRadius);
     this.mask.fill();
 
-    if (this._time > 2000) {
+    if (this._time > 1500) {
       window.addEventListener("mousedown", this.completed);
       window.addEventListener("touchstart", this.completed);
     }

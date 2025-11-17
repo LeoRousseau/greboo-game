@@ -31,8 +31,8 @@ export class Player {
         this.isDead = true;
         this.onDeathCallback?.();
       },
-      100,
-      100
+      500,
+      1300
     );
   }
 

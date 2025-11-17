@@ -47,7 +47,10 @@ export function generateBodiesFromTileData(collisions: Shape[], engine: Engine) 
         [vertices!],
         {
           isStatic: true,
-          friction: 0.01,
+          // give tiles a small friction so player foot (with friction) can grip the ground
+          friction: 0.2,
+          frictionAir: 0,
+          frictionStatic: 0.2,
         },
         true
       );
@@ -61,7 +64,10 @@ export function generateBodiesFromTileData(collisions: Shape[], engine: Engine) 
     } else {
       const body = Matter.Bodies.rectangle(col.x + col.w / 2, col.y + col.h / 2, col.w, col.h, {
         isStatic: true,
-        friction: 0.01,
+        // give tiles a small friction so player foot (with friction) can grip the ground
+        friction: 0.2,
+        frictionAir: 0,
+        frictionStatic: 0.2,
       });
       Matter.World.add(engine.physicsWorld, body);
     }
