@@ -4,6 +4,7 @@ import nipplejs, { JoystickManager } from "nipplejs";
 
 const joystickZone = ref<HTMLDivElement | null>(null);
 let manager: JoystickManager | null = null;
+const isMobile = ref(false);
 
 const emit = defineEmits<{
   (e: "joystick-move", data: { angle: number; force: number }): void;
@@ -16,7 +17,13 @@ const onJoystickButtonPressed = () => emit("joystick-button-pressed");
 const onJoystickButtonReleased = () => emit("joystick-button-released");
 
 onMounted(() => {
-  if (!("ontouchstart" in window)) return;
+  isMobile.value =
+    "ontouchstart" in window ||
+    (navigator.maxTouchPoints !== undefined && navigator.maxTouchPoints > 0) ||
+    (typeof navigator !== "undefined" &&
+      /Mobi|Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent));
+
+  if (!isMobile.value) return;
 
   manager = nipplejs.create({
     zone: joystickZone.value!,
@@ -42,7 +49,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="joystick-container">
+  <div v-if="isMobile" class="joystick-container">
     <div ref="joystickZone" class="joystick-zone"></div>
     <div class="jump-zone">
       <button
