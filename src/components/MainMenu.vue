@@ -40,26 +40,6 @@ console.log("MainMenu: snowflakes generated", snowflakes.value.length);
 
 // control whether snow runs
 const snowEnabled = ref(true);
-
-// wind variable applied to container (handles mousemove)
-let containerEl: HTMLElement | null = null;
-const onMouseMove = (e: MouseEvent) => {
-  if (!containerEl) return;
-  const rect = containerEl.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const dx = (e.clientX - cx) / rect.width; // approx -0.5..0.5
-  const windVw = (dx * 8).toFixed(2) + "vw"; // -4vw..4vw
-  containerEl.style.setProperty("--wind", windVw);
-};
-
-onMounted(() => {
-  containerEl = document.querySelector(".main-menu");
-  if (containerEl) containerEl.addEventListener("mousemove", onMouseMove);
-});
-
-onUnmounted(() => {
-  if (containerEl) containerEl.removeEventListener("mousemove", onMouseMove);
-});
 </script>
 
 <template>

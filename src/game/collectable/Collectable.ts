@@ -20,8 +20,14 @@ export class Collectable {
       this.sprite.animationSpeed = 0.1;
       this.sprite.play();
       this.sprite.anchor.set(0.5);
-      this.sprite.x = pos.x;
-      this.sprite.y = pos.y;
+      // Snap collectable to integer pixel positions to avoid subpixel blurring
+      this.sprite.x = Math.round(pos.x);
+      this.sprite.y = Math.round(pos.y);
+      // Prefer nearest filtering for this sprite's base texture when available
+      try {
+        const base = (this.sprite.texture as any).baseTexture;
+        if (base) base.scaleMode = (PIXI as any).SCALE_MODES ? (PIXI as any).SCALE_MODES.NEAREST : base.scaleMode;
+      } catch {}
       if (this._container && this._index) {
         this._container.addChildAt(this.sprite, this._index);
       }
