@@ -4,11 +4,13 @@ import { Player } from "../player/player";
 import { Level } from "../scene/Level";
 import { Scoreboard } from "./Scoreboard";
 import { DeathAnimation } from "./DeathAnimation";
+import { AudioManager } from "../audio/AudioManager";
 
 export class Game {
   currentLevel: Level;
   player: Player;
   scoreboard: Scoreboard;
+  audioManager: AudioManager;
 
   deathAnimation: DeathAnimation;
 
@@ -16,11 +18,14 @@ export class Game {
     readonly engine: Engine,
     readonly onRestart: () => void
   ) {
-    this.player = new Player(engine);
+    this.audioManager = new AudioManager();
+    this.player = new Player(engine, this.audioManager);
     Matter.World.addBody(this.engine.physicsWorld, this.player.body);
     this.currentLevel = new Level(engine, this.player);
     this.scoreboard = new Scoreboard(engine.application);
     this.deathAnimation = new DeathAnimation(engine, this.player);
+
+    this.initializeAudio();
     this.loadLevel();
 
     this.player.onDeathCallback = () => {
@@ -28,6 +33,14 @@ export class Game {
         onRestart();
       });
     };
+  }
+
+  private initializeAudio() {
+    // Register background music (you can add more music tracks as needed)
+    this.audioManager.registerAudio("music", "music.mp3");
+
+    // Play background music loop
+    this.audioManager.playMusic("music", 0.5);
   }
 
   loadLevel() {

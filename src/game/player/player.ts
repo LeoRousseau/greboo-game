@@ -7,7 +7,6 @@ import { AudioManager } from "../audio/AudioManager";
 export class Player {
   sprite?: PlayerSprite;
   readonly movement: PlayerMovement;
-  readonly audioManager: AudioManager;
 
   inventory: Record<string, number> = {};
 
@@ -19,9 +18,12 @@ export class Player {
 
   onDeathCallback?: () => void;
 
-  constructor(readonly engine: Engine) {
-    this.audioManager = new AudioManager();
+  constructor(
+    readonly engine: Engine,
+    readonly audioManager: AudioManager
+  ) {
     this.audioManager.registerAudio("jump", "jump.mp3");
+    this.audioManager.registerAudio("coin", "coin.mp3");
 
     Assets.load("player_spritesheet.json").then((sheet) => {
       this.sprite = new PlayerSprite(sheet);
@@ -64,6 +66,7 @@ export class Player {
   }
 
   private _addToInventory(id: string) {
+    this.audioManager.playSound("coin", 1.5);
     if (id in this.inventory) {
       this.inventory[id] = this.inventory[id] + 1;
     } else {
