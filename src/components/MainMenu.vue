@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAppStore } from "../store/appStore";
 import logoSvg from "../assets/logo.svg";
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref } from "vue";
 
 const appStore = useAppStore();
 
