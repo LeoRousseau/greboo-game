@@ -15,6 +15,7 @@ export class PlayerMovement {
     readonly engine: Matter.Engine,
     readonly onCollect: (key: string) => void,
     readonly onDeath: () => void,
+    readonly onJump: () => void,
     x: number,
     y: number
   ) {
@@ -156,9 +157,11 @@ export class PlayerMovement {
       if (this.isOnGround()) {
         Matter.Body.setVelocity(this.body, { x: this.body.velocity.x, y: -this.jumpSpeed });
         this.canDoubleJump = true;
+        this.onJump();
       } else if (this.canDoubleJump) {
         Matter.Body.setVelocity(this.body, { x: this.body.velocity.x, y: -this.jumpSpeed });
         this.canDoubleJump = false;
+        this.onJump();
       }
     }
   }

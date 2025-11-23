@@ -2,10 +2,12 @@ import { Assets, Container } from "pixi.js";
 import type { Engine } from "../engine/Engine";
 import { PlayerMovement } from "./playerMovement";
 import { PlayerSprite } from "./PlayerSprite";
+import { AudioManager } from "../audio/AudioManager";
 
 export class Player {
   sprite?: PlayerSprite;
   readonly movement: PlayerMovement;
+  readonly audioManager: AudioManager;
 
   inventory: Record<string, number> = {};
 
@@ -18,6 +20,9 @@ export class Player {
   onDeathCallback?: () => void;
 
   constructor(readonly engine: Engine) {
+    this.audioManager = new AudioManager();
+    this.audioManager.registerAudio("jump", "jump.mp3");
+
     Assets.load("player_spritesheet.json").then((sheet) => {
       this.sprite = new PlayerSprite(sheet);
     });
@@ -30,6 +35,9 @@ export class Player {
       () => {
         this.isDead = true;
         this.onDeathCallback?.();
+      },
+      () => {
+        this.audioManager.playSound("jump", 0.7);
       },
       500,
       1300

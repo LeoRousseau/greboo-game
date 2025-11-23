@@ -32,7 +32,7 @@ export class Engine {
     this.application = new Application({
       width: this.renderWidth,
       height: this.renderHeight,
-      background: 0x1099bb,
+      background: "#6BD7FFFF",
       antialias: false,
       autoStart: false, // on contrôle le rendu
       resolution: 1,
@@ -135,6 +135,7 @@ export class Engine {
         container: this.world,
         target: this.renderTexture,
         clear: true,
+        clearColor: "#6BD7FFFF",
       });
     });
 

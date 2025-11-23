@@ -46,7 +46,7 @@ export class Level {
   async init() {
     await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1650 } });
     await this.hParallax.init([
-      { src: "sky.jpg", factorX: 0.2, y: 640 },
+      { src: "sky.png", factorX: 0.02, y: 1400 },
       { src: "bg_trees1.png", factorX: 0.9, y: 1430 },
     ]);
 
