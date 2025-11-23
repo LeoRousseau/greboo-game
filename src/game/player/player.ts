@@ -24,6 +24,7 @@ export class Player {
   ) {
     this.audioManager.registerAudio("jump", "jump.mp3");
     this.audioManager.registerAudio("coin", "coin.mp3");
+    this.audioManager.registerAudio("death", "death.mp3");
 
     Assets.load("player_spritesheet.json").then((sheet) => {
       this.sprite = new PlayerSprite(sheet);
@@ -36,6 +37,7 @@ export class Player {
       },
       () => {
         this.isDead = true;
+        this.audioManager.playSound("death", 1);
         this.onDeathCallback?.();
       },
       () => {

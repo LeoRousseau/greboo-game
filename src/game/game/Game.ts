@@ -30,6 +30,7 @@ export class Game {
 
     this.player.onDeathCallback = () => {
       this.deathAnimation.start(() => {
+        this.audioManager.stopMusic();
         onRestart();
       });
     };
