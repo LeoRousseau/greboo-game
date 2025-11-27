@@ -49,6 +49,7 @@ export class Engine {
     this.world.addChild(this.overlayWorld);
 
     this.physicsEngine = Matter.Engine.create();
+    this.physicsEngine.gravity.y = 3;
   }
 
   async init() {

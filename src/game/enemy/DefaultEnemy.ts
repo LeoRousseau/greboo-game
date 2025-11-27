@@ -9,7 +9,7 @@ export class DefaultEnemy {
   readonly body: Matter.Body;
   facingPointIndex = 1;
 
-  speed: number = 0.4;
+  speed: number = 0.8;
 
   private _container?: Container;
   private _index?: number;

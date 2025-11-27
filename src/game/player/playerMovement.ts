@@ -8,8 +8,8 @@ export class PlayerMovement {
 
   private canDoubleJump = true;
 
-  defaultSpeed = 2;
-  jumpSpeed = 10;
+  defaultSpeed = 6;
+  jumpSpeed = 13;
 
   constructor(
     readonly engine: Matter.Engine,
@@ -144,6 +144,7 @@ export class PlayerMovement {
   }
 
   update(input: { left: boolean; right: boolean; jump: boolean }) {
+    console.log(this.body.velocity);
     if (input.left) Matter.Body.setVelocity(this.body, { x: -this.defaultSpeed, y: this.body.velocity.y });
     if (input.right) Matter.Body.setVelocity(this.body, { x: this.defaultSpeed, y: this.body.velocity.y });
 

@@ -51,7 +51,7 @@ export class Game {
         this.scoreboard.update(ticker, this.player.inventory);
       }
 
-      Matter.Engine.update(this.engine.physicsEngine, 1000 / 60);
+      Matter.Engine.update(this.engine.physicsEngine, ticker.deltaMS);
       this.currentLevel.syncWithPhysics();
       this.deathAnimation.update(ticker);
     });

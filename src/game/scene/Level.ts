@@ -67,7 +67,7 @@ export class Level {
 
     data.projectiles.forEach((pos) => {
       const spawner = new Spawner(this.engine, this.content, pos, {
-        rate: 200,
+        rate: 500,
         spriteUrl: "arrow.png",
         velocity: { x: 0, y: 0.5 },
       });
