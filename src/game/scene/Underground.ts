@@ -1,4 +1,5 @@
-import { Application, Container, TilingSprite, Assets, Graphics, Texture } from "pixi.js";
+import { Container, TilingSprite, Assets, Graphics, Texture } from "pixi.js";
+import type { Engine } from "../engine/Engine";
 
 type LayerCfg = {
   src: string;
@@ -16,8 +17,10 @@ export class Underground {
   }> = [];
   private invertY: boolean;
 
+  factor = 10;
+
   constructor(
-    private app: Application,
+    private engine: Engine,
     private staticWorld: Container,
     private movingWorld: Container,
     options?: { invertY?: boolean } // <--- ici tu choisis la convention Y
@@ -32,7 +35,11 @@ export class Underground {
     const tex = (await Assets.load(cfg.src)) as Texture;
     const group = new Container();
 
-    const spr = new TilingSprite(tex, this.app.screen.width, this.app.screen.height);
+    const spr = new TilingSprite(
+      tex,
+      this.engine.physicalWidth * this.factor,
+      this.engine.physicalHeight * this.factor
+    );
     spr.position.set(0, 0);
 
     let mask: Graphics | undefined;
@@ -70,13 +77,13 @@ export class Underground {
         const sB = worldToScreen(worldMax);
 
         const top = Math.max(0, Math.floor(Math.min(sA, sB)));
-        const bottom = Math.min(this.app.screen.height, Math.ceil(Math.max(sA, sB)));
+        const bottom = Math.min(this.engine.physicalHeight * this.factor, Math.ceil(Math.max(sA, sB)));
         const h = bottom - top;
 
         mask.clear();
         if (h > 0) {
           mask.beginFill(0xffffff);
-          mask.drawRect(0, top, this.app.screen.width, h);
+          mask.drawRect(0, top, this.engine.physicalWidth * this.factor, h * this.factor);
           mask.endFill();
           sprite.visible = true;
         } else {
@@ -88,8 +95,8 @@ export class Underground {
 
   private handleResize = () => {
     for (const l of this.layers) {
-      l.sprite.width = this.app.screen.width;
-      l.sprite.height = this.app.screen.height;
+      l.sprite.width = this.engine.physicalWidth * this.factor;
+      l.sprite.height = this.engine.physicalHeight * this.factor;
     }
   };
 

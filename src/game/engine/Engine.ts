@@ -14,6 +14,16 @@ export class Engine {
 
   readonly renderWidth = 800;
   readonly renderHeight = 400;
+  private _physicalWidth = this.renderWidth;
+  private _physicalHeight = this.renderHeight;
+
+  get physicalWidth() {
+    return this._physicalWidth;
+  }
+
+  get physicalHeight() {
+    return this._physicalHeight;
+  }
 
   renderTexture!: RenderTexture;
   renderSprite!: Sprite;
@@ -124,6 +134,10 @@ export class Engine {
 
     this.renderSprite.scale.x = data.physical_width / data.render_width;
     this.renderSprite.scale.y = data.physical_height / data.render_height;
+
+    // Store computed physical size for other modules to consume
+    this._physicalWidth = data.physical_width;
+    this._physicalHeight = data.physical_height;
 
     this.application.renderer.resize(data.physical_width, data.physical_height);
   }

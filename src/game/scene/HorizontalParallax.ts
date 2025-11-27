@@ -1,4 +1,5 @@
-import { Application, Container, TilingSprite, Assets, Texture } from "pixi.js";
+import { Container, TilingSprite, Assets, Texture } from "pixi.js";
+import type { Engine } from "../engine/Engine";
 
 export type HorizontalParallaxCfg = {
   src: string; // image de texture (ex: arbres, montagnes)
@@ -16,7 +17,7 @@ export class HorizontalParallax {
   }> = [];
 
   constructor(
-    private app: Application,
+    private engine: Engine,
     private staticWorld: Container,
     private movingWorld: Container,
     private invertY = false
@@ -30,7 +31,7 @@ export class HorizontalParallax {
     for (const cfg of config) {
       const tex = (await Assets.load(cfg.src)) as Texture;
 
-      const spr = new TilingSprite(tex, this.app.screen.width * 10, tex.height);
+      const spr = new TilingSprite(tex, this.engine.physicalWidth * 10, tex.height);
       spr.zIndex = cfg.depth ?? 0;
 
       this.root.addChild(spr);
@@ -58,7 +59,7 @@ export class HorizontalParallax {
 
   private handleResize = () => {
     for (const { sprite, tex } of this.layers) {
-      sprite.width = this.app.screen.width;
+      sprite.width = this.engine.physicalWidth;
       sprite.height = tex.height;
     }
   };

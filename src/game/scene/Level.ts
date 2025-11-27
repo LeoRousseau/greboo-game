@@ -29,8 +29,8 @@ export class Level {
     readonly engine: Engine,
     readonly player: Player
   ) {
-    this.underground = new Underground(engine.application, engine.staticWorld, engine.movingWorld, { invertY: true });
-    this.hParallax = new HorizontalParallax(engine.application, engine.staticWorld, engine.movingWorld, true);
+    this.underground = new Underground(engine, engine.staticWorld, engine.movingWorld, { invertY: true });
+    this.hParallax = new HorizontalParallax(engine, engine.staticWorld, engine.movingWorld, true);
 
     this.content = new Container();
     engine.movingWorld.addChild(this.content);
