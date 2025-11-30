@@ -7,6 +7,7 @@ import { Game } from "../game/game/Game";
 import VirtualJoystick from "./VirtualJoystick.vue";
 import fullscreenIcon from "../assets/fullscreen_icon.svg";
 import { InputManager } from "../game/engine/InputManager";
+import ScoreSubmit from "./ScoreSubmit.vue";
 
 const container = ref<HTMLDivElement | null>(null);
 const appStore = useAppStore();
@@ -18,6 +19,8 @@ const handleDebugEvents = (e: KeyboardEvent) => {
     debugController?.toggleCollision();
   } else if (e.key === "2") {
     debugController.togglePhysicsCollision();
+  } else if (e.key === "3") {
+    appStore.state = "won";
   }
 };
 
@@ -28,6 +31,10 @@ const toggleFullscreen = () => {
     document.documentElement.requestFullscreen();
   }
 };
+
+function backToMenu() {
+  appStore.state = "none";
+}
 
 // Exemple de callback joystick
 const onJoystickMove = ({ angle, force }: { angle: number; force: number }) => {
@@ -84,6 +91,7 @@ onUnmounted(() => {
 
 <template>
   <div ref="container" class="pixi-container">
+    <ScoreSubmit v-if="appStore.state === 'won'" :score="1" :onClose="backToMenu" :onSubmit="backToMenu"></ScoreSubmit>
     <VirtualJoystick
       v-if="appStore.engine"
       @joystick-move="onJoystickMove"

@@ -7,7 +7,7 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Name</th>
+          <th>Player</th>
           <th>Score</th>
           <th>Date</th>
         </tr>
@@ -120,12 +120,8 @@ th {
   padding-right: 20px;
 }
 
-tbody tr {
-  border-bottom: 1px solid #eee;
-}
-
 tbody tr:nth-child(even) {
-  background: #fafafa;
+  background: #5e5e5e;
 }
 
 td {

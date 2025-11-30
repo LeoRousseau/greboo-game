@@ -4,7 +4,7 @@ import MainMenu from "./components/MainMenu.vue";
 import { computed } from "vue";
 import { useAppStore } from "./store/appStore";
 
-const started = computed(() => useAppStore().state === "started");
+const started = computed(() => useAppStore().state === "started" || useAppStore().state === "won");
 </script>
 
 <template>
