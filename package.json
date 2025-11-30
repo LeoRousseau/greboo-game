@@ -11,6 +11,7 @@
     "format": "prettier --write \"src/**/*.{ts,vue,js,json,css,scss}\""
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.0",
     "matter-js": "^0.20.0",
     "nipplejs": "^0.10.2",
     "node": "^24.6.0",

@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import { getScores } from "../scoreboard";
+import { getTopScores } from "../scoreboard";
 
 const topScores = ref<{ name: string; score: number; date: Date }[]>([]);
 const props = defineProps<{
@@ -37,7 +37,7 @@ const props = defineProps<{
 const { onClose } = props;
 
 onMounted(async () => {
-  const scores = await getScores();
+  const scores = await getTopScores();
 
   const formatedScores = scores.map((s) => ({
     name: s.name,

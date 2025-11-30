@@ -1,18 +1,15 @@
-const API = "http://localhost:3000";
+import { supabase } from "./supabase";
 
-export function getScores(): Promise<{ name: string; score: number; date: string }[]> {
-  console.log(`${API}/scores`);
-  return fetch(`${API}/scores`, {
-    headers: {
-      "Cache-Control": "no-cache",
-    },
-  }).then((r) => r.json());
+// Ajouter un score
+export async function addScore(name: string, score: number) {
+  const { data, error } = await supabase.from("scores").insert([{ name, score }]);
+  if (error) console.error(error);
+  return data;
 }
 
-export function setScores(name: string, score: number) {
-  return fetch(`${API}/scores`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, score, date: new Date().toISOString() }),
-  });
+// Récupérer top 10
+export async function getTopScores() {
+  const { data, error } = await supabase.from("scores").select("*").order("score", { ascending: false }).limit(10);
+  if (error) console.error(error);
+  return data || [];
 }
