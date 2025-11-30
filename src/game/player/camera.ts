@@ -7,18 +7,18 @@ export class Camera {
     public player: Player,
     public container: Container,
     public renderSize: IPoint,
-    public minY: number = -2200,
+    public minY: number = -3000,
     public maxY: number = 1000
   ) {}
 
   update() {
     if (!this.player.sprite) return;
-    this.container.x = -this.player.sprite.x + this.renderSize.x / 2;
+    this.container.x = (-this.player.sprite.x + this.renderSize.x / 2 + 0.5) | 0;
     let targetY = -this.player.sprite.y + this.renderSize.y / 2;
 
     if (targetY < this.minY) targetY = this.minY;
     if (targetY > this.maxY) targetY = this.maxY;
 
-    this.container.y = targetY;
+    this.container.y = (targetY + 0.5) | 0;
   }
 }

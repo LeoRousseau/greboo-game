@@ -25,10 +25,11 @@ export class Spawner {
   }
 
   spawn() {
-    console.log("spawn");
+    const posX = Math.round(this.pos.x);
+    const posY = Math.round(this.pos.y);
     const entity = new SpawnedEntity(
       this.engine.physicsEngine,
-      this.pos,
+      { x: posX, y: posY },
       this.properties.velocity,
       this.properties.spriteUrl
     );

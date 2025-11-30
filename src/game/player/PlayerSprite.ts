@@ -55,8 +55,9 @@ export class PlayerSprite {
       return;
     }
 
-    this.sprite.x = x;
-    this.sprite.y = y;
+    // Pixel-perfect positioning to avoid glitching/blurring
+    this.sprite.x = (x + 0.5) | 0;
+    this.sprite.y = (y + 0.5) | 0;
 
     let detectedFacingLeft: boolean | null = null;
     if (dx < -0.01) detectedFacingLeft = true;
@@ -72,6 +73,7 @@ export class PlayerSprite {
 
       if (this.stableFacingFrameCount >= this.facingStabilityThreshold && this.facingLeft !== detectedFacingLeft) {
         this.facingLeft = detectedFacingLeft;
+        console.log("Facing left:", this.facingLeft);
         this.sprite.scale.x = this.facingLeft ? -1 : 1;
       }
     }
@@ -93,6 +95,7 @@ export class PlayerSprite {
     if (this.stableStateFrameCount >= this.stateStabilityThreshold && this.currentState !== detectedState) {
       this.currentState = detectedState;
       this.sprite.textures = this.animations[this.currentState];
+      console.log("State changed to:", this.currentState);
       this.sprite.play();
     }
   }
