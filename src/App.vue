@@ -4,10 +4,10 @@ import MainMenu from "./components/MainMenu.vue";
 import { computed } from "vue";
 import { useAppStore } from "./store/appStore";
 
-const started = computed(() => useAppStore().state === "none");
+const started = computed(() => useAppStore().state === "started");
 </script>
 
 <template>
-  <MainMenu v-if="started"></MainMenu>
-  <GameCanvas v-else />
+  <GameCanvas v-if="started" />
+  <MainMenu v-else></MainMenu>
 </template>

@@ -2,6 +2,7 @@
 import { useAppStore } from "../store/appStore";
 import logoSvg from "../assets/logo.svg";
 import { ref } from "vue";
+import Scoreboard from "./ScoreBoard.vue";
 
 const appStore = useAppStore();
 
@@ -12,7 +13,11 @@ function startGame() {
 }
 
 function openScoreboard() {
-  // appStore.state = "scoreboard";
+  appStore.state = "scoreboard";
+}
+
+function closeScoreboard() {
+  appStore.state = "none";
 }
 
 function openCredits() {
@@ -44,7 +49,7 @@ const snowEnabled = ref(true);
 
 <template>
   <div class="main-menu">
-    <div class="logo">
+    <div v-if="appStore.state === 'none'" class="logo">
       <img :src="logoSvg" alt="GREBOO Logo" />
     </div>
 
@@ -66,11 +71,12 @@ const snowEnabled = ref(true);
         }"
       ></div>
     </div>
-    <div class="buttons-container">
+    <div v-if="appStore.state === 'none'" class="buttons-container">
       <button class="menu-btn" @click="startGame">Start</button>
       <button class="menu-btn" @click="openScoreboard">ScoreBoard</button>
       <button class="menu-btn" @click="openCredits">Credits</button>
     </div>
+    <Scoreboard v-if="appStore.state === 'scoreboard'" :onClose="closeScoreboard"></Scoreboard>
   </div>
 </template>
 
