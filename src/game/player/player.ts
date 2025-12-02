@@ -4,6 +4,8 @@ import { PlayerMovement } from "./playerMovement";
 import { PlayerSprite } from "./PlayerSprite";
 import { AudioManager } from "../audio/AudioManager";
 
+const WIN_X_POSITION = 20450;
+
 export class Player {
   sprite?: PlayerSprite;
   readonly movement: PlayerMovement;
@@ -17,6 +19,7 @@ export class Player {
   }
 
   onDeathCallback?: () => void;
+  onWinCallback?: () => void;
 
   constructor(
     readonly engine: Engine,
@@ -57,6 +60,10 @@ export class Player {
   }
 
   syncWithPhysics() {
+    if (this.body.position.x > WIN_X_POSITION) {
+      this.onWinCallback?.();
+    }
+
     this.sprite?.update(
       this.body.position.x,
       this.body.position.y,

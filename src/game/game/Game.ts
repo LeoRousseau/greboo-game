@@ -14,9 +14,12 @@ export class Game {
 
   deathAnimation: DeathAnimation;
 
+  isWin = false;
+
   constructor(
     readonly engine: Engine,
-    readonly onRestart: () => void
+    readonly onRestart: () => void,
+    readonly onWin: () => void
   ) {
     this.audioManager = new AudioManager();
     this.player = new Player(engine, this.audioManager);
@@ -33,6 +36,11 @@ export class Game {
         this.audioManager.stopMusic();
         onRestart();
       });
+    };
+
+    this.player.onWinCallback = () => {
+      if (this.isWin) return;
+      this.win();
     };
   }
 
@@ -59,5 +67,11 @@ export class Game {
 
   start() {
     this.engine.start();
+  }
+
+  win() {
+    this.isWin = true;
+    console.log("You win!");
+    this.onWin();
   }
 }
