@@ -11,6 +11,7 @@ import { Spawner } from "../spawner/Spawner";
 import { generateBodiesFromTileData } from "./generateBodieFromTileData";
 import { generateTrapsFromTileData } from "../trap/generateTrapsFromTileData";
 import type { TiledMapData } from "../tile/loader/TiledMapData";
+import { ImageParallax } from "./ImageParallax";
 
 export class Level {
   camera: Camera;
@@ -19,6 +20,7 @@ export class Level {
 
   underground: Underground;
   hParallax: HorizontalParallax;
+  iParallax: ImageParallax;
 
   enemies: DefaultEnemy[] = [];
   spawners: Spawner[] = [];
@@ -31,6 +33,7 @@ export class Level {
   ) {
     this.underground = new Underground(engine, engine.staticWorld, engine.movingWorld, { invertY: true });
     this.hParallax = new HorizontalParallax(engine, engine.staticWorld, engine.movingWorld, true);
+    this.iParallax = new ImageParallax(engine, engine.movingWorld);
 
     this.content = new Container();
     engine.movingWorld.addChild(this.content);
@@ -49,6 +52,8 @@ export class Level {
       { src: "sky.png", factorX: 0.02, y: 1400 },
       { src: "bg_trees1.png", factorX: 0.9, y: 1430 },
     ]);
+
+    await this.iParallax.init([{ src: "couriot.png", x: 13800, y: 1090, depth: 1 }]);
 
     const data = await new TiledLoader(this.content).loadMap("./level1_v2.tmj", "./level1_tiles.png");
     this.data = data;
