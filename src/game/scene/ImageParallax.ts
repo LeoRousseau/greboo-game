@@ -1,6 +1,4 @@
 import { Assets, Container, Sprite, Texture } from "pixi.js";
-import type { Engine } from "../engine/Engine";
-import type { HorizontalParallaxCfg } from "./HorizontalParallax";
 
 type ImageParallaxCfg = {
   src: string;
@@ -11,10 +9,7 @@ type ImageParallaxCfg = {
 
 export class ImageParallax {
   private root = new Container();
-  constructor(
-    private engine: Engine,
-    private movingWorld: Container
-  ) {
+  constructor(private movingWorld: Container) {
     this.movingWorld.addChildAt(this.root, 0);
   }
 

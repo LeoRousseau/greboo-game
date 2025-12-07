@@ -34,7 +34,7 @@ export class Level {
   ) {
     this.underground = new Underground(engine, engine.staticWorld, engine.movingWorld, { invertY: true });
     this.hParallax = new HorizontalParallax(engine, engine.staticWorld, engine.movingWorld, true);
-    this.iParallax = new ImageParallax(engine, engine.movingWorld);
+    this.iParallax = new ImageParallax(engine.movingWorld);
 
     this.content = new Container();
     engine.movingWorld.addChild(this.content);
@@ -73,14 +73,14 @@ export class Level {
     });
 
     data.pinecones.forEach((pos) => {
-      const pinecone = new Collectable(this.engine, "pinecone", pos, "pinecone_spritesheet.json");
+      const pinecone = new Collectable(this.engine, "pinecone", pos, "pinecone_spritesheet");
       pinecone.addTo(this.content, this.content.children.length);
     });
 
     data.projectiles.forEach((pos) => {
       const spawner = new Spawner(this.engine, this.content, pos, {
         rate: 500,
-        spriteUrl: "arrow.png",
+        spriteUrl: "arrow",
         velocity: { x: 0, y: 0.5 },
       });
       this.spawners.push(spawner);

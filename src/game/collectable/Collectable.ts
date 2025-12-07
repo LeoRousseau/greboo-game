@@ -17,7 +17,7 @@ export class Collectable {
     spritesheet: string
   ) {
     // Utiliser le gestionnaire d'assets
-    const sheet = AssetManager.getInstance().getSpritesheet("pinecone_spritesheet" as any);
+    const sheet = AssetManager.getInstance().getSpritesheet(spritesheet as any);
     if (sheet) {
       this.sprite = new PIXI.AnimatedSprite(sheet.animations.idle);
       this.sprite.animationSpeed = 0.1;

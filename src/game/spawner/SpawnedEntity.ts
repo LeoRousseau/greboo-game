@@ -21,7 +21,7 @@ export class SpawnedEntity {
 
     // Utiliser le gestionnaire d'assets
     const assetManager = AssetManager.getInstance();
-    assetManager.load("arrow").then((texture) => {
+    assetManager.load(spriteUrl as any).then((texture) => {
       this.sprite.texture = texture;
       const width = this.sprite.width;
       const height = this.sprite.height;
