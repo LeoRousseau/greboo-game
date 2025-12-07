@@ -92,7 +92,6 @@ export class Engine {
     const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-    console.log("Resize detected:", width, height);
     const data = {
       scale: 1,
       physical_width: this.renderWidth,
@@ -124,11 +123,9 @@ export class Engine {
       } while (data.scale < 10);
     }
 
-    console.log(data, this.isMobile);
     const game_window = document.getElementsByClassName("pixi-container")[0] as HTMLElement;
     game_window.style.width = data.physical_width + "px";
     game_window.style.height = data.physical_height + "px";
-    console.log(width, data.physical_width);
     game_window.style.marginLeft = (width - data.physical_width) / 2 + "px";
     game_window.style.marginTop = (height - data.physical_height) / 2 + "px";
 

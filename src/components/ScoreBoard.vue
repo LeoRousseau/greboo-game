@@ -44,8 +44,7 @@ onMounted(async () => {
     score: s.score,
     date: new Date(s.date),
   }));
-  console.log(scores);
-  // Garde les 10 premiers
+
   topScores.value = formatedScores.slice(0, 10);
 });
 </script>

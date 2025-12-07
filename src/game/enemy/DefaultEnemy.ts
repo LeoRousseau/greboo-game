@@ -21,7 +21,6 @@ export class DefaultEnemy {
     this.points = points;
 
     Assets.load("ghost_spritesheet.json").then((sheet) => {
-      console.log(sheet);
       this.sprite = new AnimatedSprite(sheet.animations.walk);
       this.sprite.animationSpeed = 0.15;
       this.sprite.play();

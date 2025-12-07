@@ -9,7 +9,6 @@ export function drawCollisionDebug(parent: Container, colliders: Shape[], color:
 
   for (const c of colliders) {
     if ("orientation" in c) {
-      console.log("triangle");
       drawTriangle(g, c as Triangle);
     } else {
       g.drawRect(c.x, c.y, c.w, c.h);

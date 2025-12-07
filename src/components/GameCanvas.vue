@@ -47,7 +47,6 @@ const onJoystickMove = ({ angle, force }: { angle: number; force: number }) => {
 };
 
 const onJoystickEnd = () => {
-  console.log("Joystick ended");
   if (appStore.inputManager) {
     appStore.inputManager.joystickState = "neutral";
   }

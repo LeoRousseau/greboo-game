@@ -40,9 +40,6 @@ const snowflakes = ref(
   })
 );
 
-// debug log to ensure snow array is generated
-console.log("MainMenu: snowflakes generated", snowflakes.value.length);
-
 // control whether snow runs
 const snowEnabled = ref(true);
 </script>

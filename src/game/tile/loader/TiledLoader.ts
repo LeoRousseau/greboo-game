@@ -96,7 +96,6 @@ export class TiledLoader {
     const collisionLayer = layers.find((l) => getCustomProperty<boolean>(l, "collide"));
     const collisionData = collisionLayer ? generateCollisionTiles(collisionLayer as TiledTileLayer, map, tileset) : [];
     const objectPositions = this.extractObjectPositions(map);
-    console.log("Extracted Object Positions:", objectPositions);
     return {
       layers: layerContainers,
       collisions: collisionData,
@@ -130,7 +129,6 @@ export class TiledLoader {
       if (!["enemy", "projectile", "pinecone"].includes(name)) continue;
 
       for (const obj of layer.objects || []) {
-        console.log(obj);
         const x = typeof obj.x === "number" ? Math.round(obj.x) : 0;
         const y = typeof obj.y === "number" ? Math.round(obj.y) : 0;
 

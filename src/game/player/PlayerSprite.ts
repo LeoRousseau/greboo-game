@@ -73,7 +73,6 @@ export class PlayerSprite {
 
       if (this.stableFacingFrameCount >= this.facingStabilityThreshold && this.facingLeft !== detectedFacingLeft) {
         this.facingLeft = detectedFacingLeft;
-        console.log("Facing left:", this.facingLeft);
         this.sprite.scale.x = this.facingLeft ? -1 : 1;
       }
     }
@@ -95,7 +94,6 @@ export class PlayerSprite {
     if (this.stableStateFrameCount >= this.stateStabilityThreshold && this.currentState !== detectedState) {
       this.currentState = detectedState;
       this.sprite.textures = this.animations[this.currentState];
-      console.log("State changed to:", this.currentState);
       this.sprite.play();
     }
   }

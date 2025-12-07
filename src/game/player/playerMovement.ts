@@ -153,7 +153,6 @@ export class PlayerMovement {
     }
 
     if (input.jump) {
-      console.log("Jump requested", this.isOnGround(), this.canDoubleJump);
       if (this.isOnGround()) {
         Matter.Body.setVelocity(this.body, { x: this.body.velocity.x, y: -this.jumpSpeed });
         this.canDoubleJump = true;

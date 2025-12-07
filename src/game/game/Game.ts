@@ -46,7 +46,7 @@ export class Game {
 
   private initializeAudio() {
     // Register background music (you can add more music tracks as needed)
-    this.audioManager.registerAudio("music", "music.mp3");
+    this.audioManager.registerAudio("music", "citron-caramel.mp3");
 
     // Play background music loop
     this.audioManager.playMusic("music", 0.5);
@@ -71,7 +71,6 @@ export class Game {
 
   win() {
     this.isWin = true;
-    console.log("You win!");
     this.onWin();
   }
 }

@@ -69,6 +69,7 @@ export class DeathAnimation {
     this.restartText = new Text("PRESS TO RESTART", subStyle);
 
     this.completed = () => {
+      window.removeEventListener("keydown", this.completed);
       window.removeEventListener("mousedown", this.completed);
       window.removeEventListener("touchstart", this.completed);
       this._onComplete?.();
@@ -109,6 +110,7 @@ export class DeathAnimation {
     this.mask.fill();
 
     if (this._time > 1500) {
+      window.addEventListener("keydown", this.completed, { once: true });
       window.addEventListener("mousedown", this.completed);
       window.addEventListener("touchstart", this.completed);
     }
