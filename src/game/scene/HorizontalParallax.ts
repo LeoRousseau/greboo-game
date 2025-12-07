@@ -49,17 +49,14 @@ export class HorizontalParallax {
       sprite.tilePosition.x = camX * cfg.factorX;
       sprite.tilePosition.y = 0;
 
-      // placer en Y
       sprite.y = cfg.y - camY;
-
-      // collé au bord gauche
       sprite.x = 0;
     }
   }
 
   private handleResize = () => {
     for (const { sprite, tex } of this.layers) {
-      sprite.width = this.engine.physicalWidth;
+      sprite.width = this.engine.physicalWidth * 10;
       sprite.height = tex.height;
     }
   };
