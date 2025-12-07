@@ -40,7 +40,7 @@ export class PlayerMovement {
     });
 
     // Small foot sensor used only for reliable ground detection
-    this.footSensor = Matter.Bodies.rectangle(x, y + 21, 20, 40, {
+    this.footSensor = Matter.Bodies.rectangle(x, y + 21, 18, 44, {
       isSensor: true,
       isStatic: false,
       label: "player-foot-sensor",

@@ -59,7 +59,6 @@ function drawTriangle(g: Graphics, tri: Triangle) {
 
 function drawMatterBodies(g: Graphics, world: Matter.World) {
   g.clear();
-  g.lineStyle(1, 0x00ff00, 1);
 
   const bodies: Matter.Body[] = Matter.Composite.allBodies(world);
 
@@ -67,6 +66,9 @@ function drawMatterBodies(g: Graphics, world: Matter.World) {
     for (const part of body.parts) {
       if (part === body && body.parts.length > 1) continue; // éviter les doublons
 
+      const color = part.isSensor ? 0x0000ff : 0x00ff00;
+      g.lineStyle(1, color, 1);
+      g.beginFill(color, 0.25);
       g.moveTo(part.vertices[0].x, part.vertices[0].y);
 
       for (let j = 1; j < part.vertices.length; j++) {
@@ -74,6 +76,7 @@ function drawMatterBodies(g: Graphics, world: Matter.World) {
       }
 
       g.lineTo(part.vertices[0].x, part.vertices[0].y); // fermer le polygone
+      g.endFill();
     }
   }
 }
