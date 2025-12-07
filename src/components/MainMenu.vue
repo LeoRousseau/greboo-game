@@ -3,6 +3,7 @@ import { useAppStore } from "../store/appStore";
 import logoSvg from "../assets/logo.svg";
 import { ref } from "vue";
 import Scoreboard from "./ScoreBoard.vue";
+import Credits from "./Credits.vue";
 
 const appStore = useAppStore();
 
@@ -21,7 +22,7 @@ function closeScoreboard() {
 }
 
 function openCredits() {
-  // appStore.state = "credits";
+  appStore.state = "credits";
 }
 
 // generate 50 random snowflakes with CSS variable values
@@ -70,10 +71,11 @@ const snowEnabled = ref(true);
     </div>
     <div v-if="appStore.state === 'none'" class="buttons-container">
       <button class="menu-btn" @click="startGame">Start</button>
-      <button class="menu-btn" @click="openScoreboard">ScoreBoard</button>
+      <button class="menu-btn" @click="openScoreboard">Scoreboard</button>
       <button class="menu-btn" @click="openCredits">Credits</button>
     </div>
     <Scoreboard v-if="appStore.state === 'scoreboard'" :onClose="closeScoreboard"></Scoreboard>
+    <Credits v-if="appStore.state === 'credits'" :onClose="closeScoreboard"></Credits>
   </div>
 </template>
 

@@ -51,9 +51,9 @@ onMounted(async () => {
 
 <style scoped>
 .close-btn {
-  position: relative;
-  top: 10px;
-  right: 10px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
   width: 32px;
   height: 32px;
 
@@ -78,6 +78,7 @@ onMounted(async () => {
 }
 
 .score-table {
+  position: relative;
   width: 600px;
   margin: 20px auto;
   padding: 16px;
