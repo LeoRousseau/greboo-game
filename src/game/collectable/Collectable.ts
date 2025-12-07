@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 import type { IPoint } from "../types/IPoint";
 import Matter from "matter-js";
 import type { Engine } from "../engine/Engine";
+import { AssetManager } from "../assets/AssetManager";
 
 export class Collectable {
   sprite?: PIXI.AnimatedSprite;
@@ -15,7 +16,9 @@ export class Collectable {
     pos: IPoint,
     spritesheet: string
   ) {
-    PIXI.Assets.load(spritesheet).then((sheet) => {
+    // Utiliser le gestionnaire d'assets
+    const sheet = AssetManager.getInstance().getSpritesheet("pinecone_spritesheet" as any);
+    if (sheet) {
       this.sprite = new PIXI.AnimatedSprite(sheet.animations.idle);
       this.sprite.animationSpeed = 0.1;
       this.sprite.play();
@@ -39,7 +42,9 @@ export class Collectable {
       });
       Matter.World.add(this.engine.physicsWorld, this.body);
       (this.body as any).collect = () => this.collect();
-    });
+    } else {
+      console.warn("pinecone_spritesheet non disponible");
+    }
   }
 
   addTo(container: PIXI.Container, index = 0) {

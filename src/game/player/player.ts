@@ -1,8 +1,9 @@
-import { Assets, Container } from "pixi.js";
+import { Container } from "pixi.js";
 import type { Engine } from "../engine/Engine";
 import { PlayerMovement } from "./playerMovement";
 import { PlayerSprite } from "./PlayerSprite";
 import { AudioManager } from "../audio/AudioManager";
+import { AssetManager } from "../assets/AssetManager";
 
 const WIN_X_POSITION = 20450;
 
@@ -29,9 +30,13 @@ export class Player {
     this.audioManager.registerAudio("coin", "coin.mp3");
     this.audioManager.registerAudio("death", "death.mp3");
 
-    Assets.load("player_spritesheet.json").then((sheet) => {
+    // Utiliser le gestionnaire d'assets
+    const sheet = AssetManager.getInstance().getSpritesheet("player_spritesheet");
+    if (sheet) {
       this.sprite = new PlayerSprite(sheet);
-    });
+    } else {
+      console.warn("player_spritesheet non disponible");
+    }
 
     this.movement = new PlayerMovement(
       engine.physicsEngine,

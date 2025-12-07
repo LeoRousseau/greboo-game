@@ -1,7 +1,8 @@
-import { AnimatedSprite, Assets, Container } from "pixi.js";
+import { AnimatedSprite, Container } from "pixi.js";
 import type { IPoint } from "../types/IPoint";
 import Matter from "matter-js";
 import type { Engine } from "../engine/Engine";
+import { AssetManager } from "../assets/AssetManager";
 
 export class DefaultEnemy {
   readonly points: [IPoint, IPoint];
@@ -20,7 +21,9 @@ export class DefaultEnemy {
   ) {
     this.points = points;
 
-    Assets.load("ghost_spritesheet.json").then((sheet) => {
+    // Utiliser le gestionnaire d'assets
+    const sheet = AssetManager.getInstance().getSpritesheet("ghost_spritesheet");
+    if (sheet) {
       this.sprite = new AnimatedSprite(sheet.animations.walk);
       this.sprite.animationSpeed = 0.15;
       this.sprite.play();
@@ -31,8 +34,9 @@ export class DefaultEnemy {
       if (this._container && this._index) {
         this._container.addChildAt(this.sprite, this._index);
       }
-    });
-
+    } else {
+      console.warn("ghost_spritesheet non disponible");
+    }
     this.body = Matter.Bodies.rectangle(points[0].x, points[0].y, 25, 40, {
       restitution: 0,
       friction: 0.1,

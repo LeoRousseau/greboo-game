@@ -12,6 +12,7 @@ import { generateBodiesFromTileData } from "./generateBodieFromTileData";
 import { generateTrapsFromTileData } from "../trap/generateTrapsFromTileData";
 import type { TiledMapData } from "../tile/loader/TiledMapData";
 import { ImageParallax } from "./ImageParallax";
+import { AssetPreloader } from "../assets/AssetPreloader";
 
 export class Level {
   camera: Camera;
@@ -43,6 +44,12 @@ export class Level {
     this.init().then(() => {
       const mid = this.content.getChildByLabel("mid");
       this.player.addTo(this.content, mid ? this.content.getChildIndex(mid) + 1 : 0);
+    });
+
+    // Précharger les assets de niveau en arrière-plan
+    const preloader = new AssetPreloader();
+    preloader.preloadLevelAssets().catch((error) => {
+      console.error("Erreur lors du préchargement des assets de niveau:", error);
     });
   }
 

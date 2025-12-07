@@ -1,6 +1,7 @@
 import type { IPoint } from "../types/IPoint";
 import * as PIXI from "pixi.js";
 import Matter, { Bodies, Body, World, Events } from "matter-js";
+import { AssetManager } from "../assets/AssetManager";
 
 export class SpawnedEntity {
   public sprite: PIXI.Sprite;
@@ -13,8 +14,15 @@ export class SpawnedEntity {
     readonly velocity: IPoint,
     spriteUrl: string
   ) {
-    PIXI.Assets.load(spriteUrl).then((t) => {
-      this.sprite.texture = t;
+    this.sprite = new PIXI.Sprite();
+    this.sprite.anchor.set(0.5);
+    this.sprite.x = pos.x;
+    this.sprite.y = pos.y;
+
+    // Utiliser le gestionnaire d'assets
+    const assetManager = AssetManager.getInstance();
+    assetManager.load("arrow").then((texture) => {
+      this.sprite.texture = texture;
       const width = this.sprite.width;
       const height = this.sprite.height;
       this.body = Bodies.rectangle(pos.x, pos.y, width, height, {
@@ -27,11 +35,6 @@ export class SpawnedEntity {
       World.add(this.engine.world, this.body);
       Body.setVelocity(this.body, velocity);
     });
-    this.sprite = new PIXI.Sprite();
-
-    this.sprite.anchor.set(0.5);
-    this.sprite.x = pos.x;
-    this.sprite.y = pos.y;
 
     Events.on(this.engine, "collisionStart", (event) => {
       if (this.destroyed) return;

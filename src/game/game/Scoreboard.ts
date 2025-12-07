@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { AssetManager } from "../assets/AssetManager";
 
 export class Scoreboard {
   private container: PIXI.Container;
@@ -35,19 +36,27 @@ export class Scoreboard {
     this.timeText.x = 100;
     this.timeText.y = 60;
 
-    PIXI.Assets.load("pine_icon.png").then((tex) => {
-      this.pineconeIcon = new PIXI.Sprite(tex);
+    // Utiliser le gestionnaire d'assets
+    const assetManager = AssetManager.getInstance();
+    const pineTexture = assetManager.getTexture("pine_icon");
+    if (pineTexture) {
+      this.pineconeIcon = new PIXI.Sprite(pineTexture);
       this.pineconeIcon.x = 50;
       this.pineconeIcon.y = 20;
       this.container.addChild(this.pineconeIcon);
-    });
+    } else {
+      console.warn("pine_icon non disponible");
+    }
 
-    PIXI.Assets.load("time_icon.png").then((tex) => {
-      this.timeIcon = new PIXI.Sprite(tex);
+    const timeTexture = assetManager.getTexture("time_icon");
+    if (timeTexture) {
+      this.timeIcon = new PIXI.Sprite(timeTexture);
       this.timeIcon.x = 50;
       this.timeIcon.y = 60;
       this.container.addChild(this.timeIcon);
-    });
+    } else {
+      console.warn("time_icon non disponible");
+    }
 
     this.container.addChild(this.pineconeText);
     this.container.addChild(this.timeText);
