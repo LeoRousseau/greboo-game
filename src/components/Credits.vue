@@ -33,7 +33,7 @@ const { onClose } = props;
 const sections = reactive<Section[]>([
   {
     title: "Création du jeu",
-    items: [{ text: "Leo Rousseau ", link: "https://github.com/LeoRousseau/greboo-game" }],
+    items: [{ text: "Léo Rousseau ", link: "https://github.com/LeoRousseau/greboo-game" }],
   },
   {
     title: "Audio",

@@ -10,6 +10,7 @@ import { InputManager } from "../game/engine/InputManager";
 import ScoreSubmit from "./ScoreSubmit.vue";
 
 const container = ref<HTMLDivElement | null>(null);
+const isPseudoFullscreen = ref(false);
 const appStore = useAppStore();
 
 let debugController: DebugController;
@@ -24,11 +25,43 @@ const handleDebugEvents = (e: KeyboardEvent) => {
   }
 };
 
-const toggleFullscreen = () => {
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
-  } else {
-    document.documentElement.requestFullscreen();
+const toggleFullscreen = async () => {
+  const doc: any = document;
+
+  const exitFn = () => {
+    if (document.exitFullscreen) return document.exitFullscreen();
+    if (doc.webkitExitFullscreen) return doc.webkitExitFullscreen();
+    // nothing else to do for pseudo fullscreen
+    return Promise.resolve();
+  };
+
+  const requestOnElement = async (el: Element) => {
+    const anyEl: any = el;
+    if (anyEl.requestFullscreen) return anyEl.requestFullscreen();
+    if (anyEl.webkitRequestFullscreen) return anyEl.webkitRequestFullscreen();
+    return Promise.reject(new Error("Fullscreen API not supported on this element"));
+  };
+
+  // If a native fullscreen is active, try to exit it
+  if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+    await exitFn();
+    isPseudoFullscreen.value = false;
+    return;
+  }
+
+  // Try to request native fullscreen on the container (or documentElement)
+  const el = container.value ?? document.documentElement;
+  try {
+    await requestOnElement(el);
+    // native fullscreen succeeded
+    isPseudoFullscreen.value = false;
+  } catch (e) {
+    // Fallback for browsers that don't support Fullscreen API (notably older iOS Safari)
+    isPseudoFullscreen.value = !isPseudoFullscreen.value;
+    // Try to hide the address bar on mobile by scrolling to top
+    try {
+      window.scrollTo(0, 0);
+    } catch (_) {}
   }
 };
 
@@ -93,7 +126,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="container" class="pixi-container">
+  <div ref="container" :class="['pixi-container', { 'pseudo-fullscreen': isPseudoFullscreen }]">
     <ScoreSubmit v-if="appStore.state === 'won'" :score="1" :onClose="backToMenu" :onSubmit="backToMenu"></ScoreSubmit>
     <VirtualJoystick
       v-if="appStore.engine"
@@ -153,5 +186,15 @@ body,
   overflow: hidden;
   width: 100%;
   height: 100%;
+}
+
+.pseudo-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: black;
 }
 </style>
