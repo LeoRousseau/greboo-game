@@ -11,7 +11,8 @@ export type AssetKey =
   | "bg_trees1"
   | "couriot"
   | "pine_icon"
-  | "time_icon";
+  | "time_icon"
+  | "heart_icon";
 
 /**
  * Gestionnaire centralisé des assets
@@ -79,6 +80,10 @@ export class AssetManager {
       alias: "time_icon",
       src: "time_icon.png",
     });
+    Assets.add({
+      alias: "heart_icon",
+      src: "heart_icon.png",
+    });
   }
 
   /**
@@ -95,6 +100,7 @@ export class AssetManager {
       "bg_trees1",
       "pine_icon",
       "time_icon",
+      "heart_icon",
     ];
 
     await Promise.all(essentialAssets.map((key) => this.load(key)));

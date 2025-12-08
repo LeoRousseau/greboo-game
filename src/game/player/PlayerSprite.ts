@@ -17,6 +17,11 @@ export class PlayerSprite {
   private stableFacingFrameCount = 0;
   private facingStabilityThreshold = 2;
 
+  // Blink while invulnerable
+  private blinkFrame = 0;
+  private blinkFrameThreshold = 8; // toggle every ~8 frames
+  private wasInvulnerable = false;
+
   get x() {
     return this.sprite.x;
   }
@@ -43,7 +48,15 @@ export class PlayerSprite {
     container.addChildAt(this.sprite, index);
   }
 
-  public update(x: number, y: number, dx: number, _dy: number, onGround: boolean, isDead: boolean) {
+  public update(
+    x: number,
+    y: number,
+    dx: number,
+    _dy: number,
+    onGround: boolean,
+    isDead: boolean,
+    invulnerable: boolean = false
+  ) {
     if (isDead) {
       if (this.currentState !== "death") {
         this.currentState = "death";
@@ -95,6 +108,21 @@ export class PlayerSprite {
       this.currentState = detectedState;
       this.sprite.textures = this.animations[this.currentState];
       this.sprite.play();
+    }
+
+    // Handle invulnerability blink
+    if (invulnerable) {
+      this.blinkFrame++;
+      if (this.blinkFrame >= this.blinkFrameThreshold) {
+        this.sprite.visible = !this.sprite.visible;
+        this.blinkFrame = 0;
+      }
+      this.wasInvulnerable = true;
+    } else if (this.wasInvulnerable) {
+      // Reset visibility when invulnerability ends
+      this.sprite.visible = true;
+      this.blinkFrame = 0;
+      this.wasInvulnerable = false;
     }
   }
 }

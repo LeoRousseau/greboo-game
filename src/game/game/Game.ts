@@ -56,7 +56,7 @@ export class Game {
     this.engine.application.ticker.add((ticker) => {
       this.currentLevel.update(ticker);
       if (!this.player.isDead) {
-        this.scoreboard.update(ticker, this.player.inventory);
+        this.scoreboard.update(ticker, this.player.inventory, this.player.hp);
       }
 
       Matter.Engine.update(this.engine.physicsEngine, ticker.deltaMS);

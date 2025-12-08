@@ -7,6 +7,7 @@ export class Scoreboard {
   private pineconeIcon?: PIXI.Sprite;
   private timeText: PIXI.Text;
   private timeIcon?: PIXI.Sprite;
+  private heartIcons: PIXI.Sprite[] = [];
 
   private elapsedTime = 0;
 
@@ -58,6 +59,23 @@ export class Scoreboard {
       console.warn("time_icon non disponible");
     }
 
+    // Hearts (3)
+    const heartTexture = assetManager.getTexture("heart_icon");
+    if (heartTexture) {
+      const startX = (app.renderer ? app.renderer.width : 800) - 150;
+      const y = 20;
+      for (let i = 0; i < 3; i++) {
+        const s = new PIXI.Sprite(heartTexture);
+        s.x = startX + i * 44;
+        s.y = y;
+        s.scale.set(0.8);
+        this.heartIcons.push(s);
+        this.container.addChild(s);
+      }
+    } else {
+      console.warn("heart_icon non disponible");
+    }
+
     this.container.addChild(this.pineconeText);
     this.container.addChild(this.timeText);
     app.stage.addChild(this.container);
@@ -69,7 +87,7 @@ export class Scoreboard {
     this.timeText.text = "00:00";
   }
 
-  public update(ticker: PIXI.Ticker, inventory: Record<string, number>) {
+  public update(ticker: PIXI.Ticker, inventory: Record<string, number>, hp: number = 3) {
     this.elapsedTime += ticker.deltaMS / 1000;
 
     const totalSeconds = Math.floor(this.elapsedTime);
@@ -78,5 +96,13 @@ export class Scoreboard {
     this.timeText.text = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
     this.pineconeText.text = `${inventory["pinecone"] ?? 0}`;
+
+    // Update hearts display
+    for (let i = 0; i < this.heartIcons.length; i++) {
+      const sprite = this.heartIcons[i];
+      sprite.visible = i < hp;
+      // Slightly dim hearts when not visible for consistent layout
+      sprite.alpha = sprite.visible ? 1 : 0.2;
+    }
   }
 }
