@@ -9,7 +9,7 @@ export class Scoreboard {
   private timeIcon?: PIXI.Sprite;
   private heartIcons: PIXI.Sprite[] = [];
 
-  private elapsedTime = 0;
+  elapsedTime = 0;
 
   constructor(app: PIXI.Application) {
     this.container = new PIXI.Container();

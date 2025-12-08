@@ -9,7 +9,7 @@ export class PlayerMovement {
   private canDoubleJump = true;
 
   defaultSpeed = 6;
-  jumpSpeed = 13;
+  jumpSpeed = 13.5;
 
   constructor(
     readonly engine: Matter.Engine,

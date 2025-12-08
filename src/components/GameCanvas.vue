@@ -8,6 +8,7 @@ import VirtualJoystick from "./VirtualJoystick.vue";
 import fullscreenIcon from "../assets/fullscreen_icon.svg";
 import { InputManager } from "../game/engine/InputManager";
 import ScoreSubmit from "./ScoreSubmit.vue";
+import { computeScore } from "../scoreboard/computeScore";
 
 const container = ref<HTMLDivElement | null>(null);
 const isPseudoFullscreen = ref(false);
@@ -21,7 +22,7 @@ const handleDebugEvents = (e: KeyboardEvent) => {
   } else if (e.key === "2") {
     debugController.togglePhysicsCollision();
   } else if (e.key === "3") {
-    appStore.state = "won";
+    appStore.game?.win();
   }
 };
 
@@ -107,9 +108,13 @@ onMounted(async () => {
     const game = new Game(
       engine,
       () => (appStore.state = "none"),
-      () => (appStore.state = "won")
+      () => {
+        appStore.score = computeScore(game.scoreboard.elapsedTime, game.player.inventory.pinecone ?? 0, game.player.hp);
+        appStore.state = "won";
+      }
     );
     game.start();
+    appStore.game = game;
 
     setTimeout(() => {
       debugController = new DebugController(game);
@@ -127,7 +132,12 @@ onUnmounted(() => {
 
 <template>
   <div ref="container" :class="['pixi-container', { 'pseudo-fullscreen': isPseudoFullscreen }]">
-    <ScoreSubmit v-if="appStore.state === 'won'" :score="1" :onClose="backToMenu" :onSubmit="backToMenu"></ScoreSubmit>
+    <ScoreSubmit
+      v-if="appStore.state === 'won'"
+      :score="appStore.score"
+      :onClose="backToMenu"
+      :onSubmit="backToMenu"
+    ></ScoreSubmit>
     <VirtualJoystick
       v-if="appStore.engine"
       @joystick-move="onJoystickMove"
