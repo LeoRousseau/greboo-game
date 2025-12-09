@@ -5,7 +5,7 @@ import { Engine } from "../game/engine/Engine";
 import { DebugController } from "../game/debug/DebugController";
 import { Game } from "../game/game/Game";
 import VirtualJoystick from "./VirtualJoystick.vue";
-import fullscreenIcon from "../assets/fullscreen_icon.svg";
+import fullscreenIcon from "../assets/fullscreen_icon.svg?url";
 import { InputManager } from "../game/engine/InputManager";
 import ScoreSubmit from "./ScoreSubmit.vue";
 import { computeScore } from "../scoreboard/computeScore";
@@ -15,6 +15,9 @@ const isPseudoFullscreen = ref(false);
 const appStore = useAppStore();
 
 let debugController: DebugController;
+
+// Expose fullscreenIcon to template
+const icon = fullscreenIcon;
 
 const handleDebugEvents = (e: KeyboardEvent) => {
   if (e.key === "1") {
@@ -147,7 +150,7 @@ onUnmounted(() => {
     />
     <div class="bottom-right-menu">
       <div class="buttton" @click="toggleFullscreen">
-        <img :src="fullscreenIcon" alt="Fullscreen" />
+        <img :src="icon" alt="Fullscreen" />
       </div>
     </div>
   </div>

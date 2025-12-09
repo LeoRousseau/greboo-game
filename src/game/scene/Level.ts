@@ -57,7 +57,7 @@ export class Level {
     await this.underground.init({ src: "bg_ground.jpeg", clampY: { min: 1650 } });
     await this.hParallax.init([
       { src: "sky.png", factorX: 0.02, y: 1400 },
-      { src: "bg_trees1.png", factorX: 0.9, y: 1430 },
+      { src: "tree.png", factorX: 0.9, y: 1437 },
     ]);
 
     await this.iParallax.init([{ src: "couriot.png", x: 13800, y: 1090, depth: 1 }]);
@@ -66,6 +66,7 @@ export class Level {
     this.data = data;
     generateBodiesFromTileData(data.collisions, this.engine);
     generateTrapsFromTileData(data.traps, this.engine);
+
     data.enemies.forEach((pos) => {
       const enemy = new DefaultEnemy(this.engine, pos);
       this.enemies.push(enemy);

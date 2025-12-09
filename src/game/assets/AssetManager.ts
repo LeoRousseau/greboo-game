@@ -8,7 +8,7 @@ export type AssetKey =
   | "arrow"
   | "bg_ground"
   | "sky"
-  | "bg_trees1"
+  | "tree"
   | "couriot"
   | "pine_icon"
   | "time_icon"
@@ -65,8 +65,8 @@ export class AssetManager {
       src: "sky.png",
     });
     Assets.add({
-      alias: "bg_trees1",
-      src: "bg_trees1.png",
+      alias: "tree",
+      src: "tree.png",
     });
     Assets.add({
       alias: "couriot",
@@ -97,7 +97,7 @@ export class AssetManager {
       "level1_tiles",
       "bg_ground",
       "sky",
-      "bg_trees1",
+      "tree",
       "pine_icon",
       "time_icon",
       "heart_icon",

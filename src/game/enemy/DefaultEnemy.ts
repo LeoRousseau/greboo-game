@@ -37,7 +37,7 @@ export class DefaultEnemy {
     } else {
       console.warn("ghost_spritesheet non disponible");
     }
-    this.body = Matter.Bodies.rectangle(points[0].x, points[0].y, 25, 40, {
+    this.body = Matter.Bodies.rectangle(points[0].x, points[0].y, 25, 46, {
       restitution: 0,
       friction: 0.1,
       inertia: Infinity,

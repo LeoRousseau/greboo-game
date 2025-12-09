@@ -30,7 +30,7 @@ export class PlayerMovement {
     });
 
     // Physical foot part with friction to interact with ground
-    const foot = Matter.Bodies.rectangle(x, y + 21, 12, 40, {
+    const foot = Matter.Bodies.rectangle(x, y + 21, 12, 44, {
       isSensor: false,
       restitution: 0,
       friction: 0.6,
@@ -40,7 +40,7 @@ export class PlayerMovement {
     });
 
     // Small foot sensor used only for reliable ground detection
-    this.footSensor = Matter.Bodies.rectangle(x, y + 21, 18, 44, {
+    this.footSensor = Matter.Bodies.rectangle(x, y + 21, 18, 48, {
       isSensor: true,
       isStatic: false,
       label: "player-foot-sensor",
