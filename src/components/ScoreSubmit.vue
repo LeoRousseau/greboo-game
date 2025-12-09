@@ -1,6 +1,9 @@
 <template>
   <div class="overlay">
     <div class="score-submit">
+      <div class="celebration">
+        <h1 class="win-title">YOU WIN! 🎉</h1>
+      </div>
       <button class="close-btn" @click="onClose?.()">✕</button>
 
       <h2>Share you score !</h2>
@@ -80,26 +83,31 @@ async function submit() {
 
 .score-submit {
   position: relative;
-  width: 360px;
-  padding: 20px 18px 16px;
+  width: 90vw;
+  max-width: 400px;
+  max-height: 90vh;
+  padding: 2vw;
   border-radius: 12px;
   background: #3b3b3b;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   font-family: "Inter", sans-serif;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 h2 {
-  margin-bottom: 8px;
-  font-size: 20px;
+  margin-bottom: clamp(6px, 1vw, 12px);
+  font-size: clamp(16px, 5vw, 24px);
   font-weight: 600;
   color: #ffffff;
 }
 
 /* Score affiché */
 .player-score {
-  margin-bottom: 16px;
-  font-size: 32px;
+  margin-bottom: clamp(8px, 2vw, 12px);
+  font-size: clamp(24px, 6vw, 40px);
   color: #ffea00;
 }
 
@@ -122,21 +130,21 @@ h2 {
 
 .form {
   display: flex;
-  gap: 10px;
+  gap: clamp(6px, 1vw, 12px);
   justify-content: center;
-  margin-bottom: 12px;
+  margin-bottom: clamp(10px, 1.5vw, 16px);
+  flex-direction: column;
 }
 
 input {
-  flex: 1;
-  padding: 8px 10px;
+  padding: clamp(6px, 1.5vw, 12px) clamp(8px, 1.5vw, 14px);
   border-radius: 8px;
   border: 1px solid #ddd;
-  font-size: 14px;
+  font-size: clamp(12px, 3vw, 16px);
 }
 
 button {
-  padding: 8px 14px;
+  padding: clamp(6px, 1.5vw, 12px) clamp(12px, 2vw, 18px);
   border-radius: 8px;
   border: none;
   background-color: #ffea00;
@@ -144,6 +152,7 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
+  font-size: clamp(12px, 3vw, 16px);
 }
 
 button:disabled {
@@ -165,5 +174,54 @@ button:hover:not(:disabled) {
   color: #dc3545;
   font-weight: 500;
   margin-top: 6px;
+}
+
+/* Victory Celebration */
+.celebration {
+  text-align: center;
+  margin-bottom: clamp(12px, 2vw, 20px);
+  position: relative;
+}
+
+.win-title {
+  font-size: clamp(32px, 12vw, 60px);
+  font-weight: 900;
+  color: #ffea00;
+  text-shadow:
+    0 4px 20px rgba(255, 234, 0, 0.6),
+    0 0 30px rgba(255, 100, 0, 0.4);
+  margin: 0 0 clamp(10px, 2vw, 20px) 0;
+  letter-spacing: 2px;
+  animation:
+    bounce-title 0.6s ease-out,
+    glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes bounce-title {
+  0% {
+    transform: scale(0.5) translateY(-50px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    text-shadow:
+      0 4px 20px rgba(255, 234, 0, 0.6),
+      0 0 30px rgba(255, 100, 0, 0.4);
+  }
+  50% {
+    text-shadow:
+      0 4px 30px rgba(255, 234, 0, 0.8),
+      0 0 50px rgba(255, 100, 0, 0.6);
+  }
 }
 </style>
