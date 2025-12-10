@@ -28,6 +28,8 @@ export class Level {
 
   data?: TiledMapData;
 
+  private initPromise: Promise<void>;
+
   constructor(
     readonly engine: Engine,
     readonly player: Player
@@ -41,7 +43,7 @@ export class Level {
 
     this.camera = new Camera(this.player, this.engine.movingWorld, { x: engine.renderWidth, y: engine.renderHeight });
 
-    this.init().then(() => {
+    this.initPromise = this.init().then(() => {
       const mid = this.content.getChildByLabel("mid");
       this.player.addTo(this.content, mid ? this.content.getChildIndex(mid) + 1 : 0);
     });
@@ -105,5 +107,9 @@ export class Level {
 
   syncWithPhysics() {
     this.player.syncWithPhysics();
+  }
+
+  waitForInit(): Promise<void> {
+    return this.initPromise;
   }
 }

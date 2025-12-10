@@ -29,7 +29,11 @@ export class Game {
     this.deathAnimation = new DeathAnimation(engine, this.player);
 
     this.initializeAudio();
-    this.loadLevel();
+
+    // Wait for level to be initialized before starting the physics loop
+    this.currentLevel.waitForInit().then(() => {
+      this.loadLevel();
+    });
 
     this.player.onDeathCallback = () => {
       this.deathAnimation.start(() => {
@@ -54,13 +58,17 @@ export class Game {
 
   loadLevel() {
     this.engine.application.ticker.add((ticker) => {
+      // Update physics first
+      Matter.Engine.update(this.engine.physicsEngine, ticker.deltaMS);
+
+      // Then sync visuals with physics
+      this.currentLevel.syncWithPhysics();
       this.currentLevel.update(ticker);
+
       if (!this.player.isDead) {
         this.scoreboard.update(ticker, this.player.inventory, this.player.hp);
       }
 
-      Matter.Engine.update(this.engine.physicsEngine, ticker.deltaMS);
-      this.currentLevel.syncWithPhysics();
       this.deathAnimation.update(ticker);
     });
   }
